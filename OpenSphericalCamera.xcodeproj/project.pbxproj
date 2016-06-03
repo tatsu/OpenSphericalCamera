@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17872B701D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17872B6F1D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift */; };
 		17CA22DC1D01197300BD2C82 /* OpenSphericalCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 17CA22DB1D01197300BD2C82 /* OpenSphericalCamera.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		17CA22E31D01197300BD2C82 /* OpenSphericalCamera.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17CA22D81D01197300BD2C82 /* OpenSphericalCamera.framework */; };
 		17CA22E81D01197300BD2C82 /* OpenSphericalCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17CA22E71D01197300BD2C82 /* OpenSphericalCameraTests.swift */; };
+		17CA233C1D011F2B00BD2C82 /* OpenSphericalCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17CA233A1D011F2B00BD2C82 /* OpenSphericalCamera.swift */; };
+		17CA233D1D011F2B00BD2C82 /* OpenSphericalCamera+Theta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17CA233B1D011F2B00BD2C82 /* OpenSphericalCamera+Theta.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,12 +26,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		17872B6F1D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OpenSphericalCamera+ThetaTests.swift"; sourceTree = "<group>"; };
 		17CA22D81D01197300BD2C82 /* OpenSphericalCamera.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenSphericalCamera.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		17CA22DB1D01197300BD2C82 /* OpenSphericalCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenSphericalCamera.h; sourceTree = "<group>"; };
 		17CA22DD1D01197300BD2C82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		17CA22E21D01197300BD2C82 /* OpenSphericalCameraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenSphericalCameraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		17CA22E71D01197300BD2C82 /* OpenSphericalCameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenSphericalCameraTests.swift; sourceTree = "<group>"; };
 		17CA22E91D01197300BD2C82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		17CA233A1D011F2B00BD2C82 /* OpenSphericalCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenSphericalCamera.swift; sourceTree = "<group>"; };
+		17CA233B1D011F2B00BD2C82 /* OpenSphericalCamera+Theta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OpenSphericalCamera+Theta.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +77,8 @@
 		17CA22DA1D01197300BD2C82 /* OpenSphericalCamera */ = {
 			isa = PBXGroup;
 			children = (
+				17CA233A1D011F2B00BD2C82 /* OpenSphericalCamera.swift */,
+				17CA233B1D011F2B00BD2C82 /* OpenSphericalCamera+Theta.swift */,
 				17CA22DB1D01197300BD2C82 /* OpenSphericalCamera.h */,
 				17CA22DD1D01197300BD2C82 /* Info.plist */,
 			);
@@ -82,6 +90,7 @@
 			children = (
 				17CA22E71D01197300BD2C82 /* OpenSphericalCameraTests.swift */,
 				17CA22E91D01197300BD2C82 /* Info.plist */,
+				17872B6F1D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift */,
 			);
 			path = OpenSphericalCameraTests;
 			sourceTree = "<group>";
@@ -194,6 +203,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17CA233C1D011F2B00BD2C82 /* OpenSphericalCamera.swift in Sources */,
+				17CA233D1D011F2B00BD2C82 /* OpenSphericalCamera+Theta.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +213,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				17CA22E81D01197300BD2C82 /* OpenSphericalCameraTests.swift in Sources */,
+				17872B701D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +322,7 @@
 		17CA22ED1D01197300BD2C82 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -320,12 +333,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tatsu.ios.OpenSphericalCamera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		17CA22EE1D01197300BD2C82 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -378,6 +393,7 @@
 				17CA22EE1D01197300BD2C82 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		17CA22EF1D01197300BD2C82 /* Build configuration list for PBXNativeTarget "OpenSphericalCameraTests" */ = {
 			isa = XCConfigurationList;
@@ -386,6 +402,7 @@
 				17CA22F11D01197300BD2C82 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
