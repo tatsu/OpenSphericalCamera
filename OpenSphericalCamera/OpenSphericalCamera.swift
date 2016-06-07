@@ -274,8 +274,18 @@ public class OpenSphericalCamera {
         self.execute("camera.takePicture", parameters: ["sessionId": sessionId], completionHandler: wrapHandler)
     }
 
-    public func listImages() {
-        // TODO
+    public func listImages(entryCount entryCount: Int, maxSize: Int? = nil, continuationToken: String? = nil, includeThumb: Bool? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        var parameters: [String: AnyObject] = ["entryCount": entryCount]
+        if let maxSize = maxSize {
+            parameters["maxSize"] = maxSize
+        }
+        if let continuationToken = continuationToken {
+            parameters["continuationToken"] = continuationToken
+        }
+        if let includeThumb = includeThumb {
+            parameters["includeThumb"] = includeThumb
+        }
+        self.execute("camera.listImages", parameters: parameters, completionHandler: completionHandler)
     }
 
     public func delete() {

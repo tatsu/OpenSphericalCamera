@@ -132,4 +132,47 @@ class OpenSphericalCameraTests: XCTestCase {
         // closeSession
         self.osc.closeSession(sessionId: sessionId!)
     }
+
+    func testListImages() {
+        var sessionId: String?
+
+        // startSession
+        var semaphore = dispatch_semaphore_create(0)
+        self.osc.startSession { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let results = jsonDic!["results"] as? NSDictionary
+            XCTAssert(results != nil && results!.count > 0)
+
+            sessionId = results!["sessionId"] as? String
+            XCTAssert(sessionId != nil && !sessionId!.isEmpty)
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+        // listImages
+        semaphore = dispatch_semaphore_create(0)
+        var completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
+        completionHandler = { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let results = jsonDic!["results"] as? NSDictionary
+            XCTAssert(results != nil && results!.count > 0)
+
+            let totalEntries = results!["totalEntries"] as? Int
+            XCTAssert(totalEntries != nil)
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        self.osc.listImages(entryCount: 3, includeThumb: false, completionHandler: completionHandler)
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+        // closeSession
+        self.osc.closeSession(sessionId: sessionId!)
+    }
 }
