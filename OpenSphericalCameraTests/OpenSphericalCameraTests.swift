@@ -133,7 +133,7 @@ class OpenSphericalCameraTests: XCTestCase {
         self.osc.closeSession(sessionId: sessionId!)
     }
 
-    func testListImages() {
+    func testListImagesAndDelete() {
         var sessionId: String?
 
         // startSession
@@ -164,10 +164,38 @@ class OpenSphericalCameraTests: XCTestCase {
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
 
+            let entries = results!["entries"] as? [NSDictionary]
+            XCTAssert(entries != nil && entries!.count > 0)
+
+            let uri = entries![0]["uri"] as? String
+            XCTAssert(uri != nil && !uri!.isEmpty)
+
             let totalEntries = results!["totalEntries"] as? Int
             XCTAssert(totalEntries != nil)
 
-            dispatch_semaphore_signal(semaphore)
+            // delete
+            self.osc.delete(fileUri: uri!) { (data, response, error) in
+                XCTAssert(data != nil && data!.length > 0)
+                let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                let state = jsonDic!["state"] as? String
+                XCTAssert(state != nil && state! == "done")
+
+                self.osc.listImages(entryCount: 1, includeThumb: false) { (data, response, error) in
+                    XCTAssert(data != nil && data!.length > 0)
+                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                    XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                    let resultsUpdated = jsonDic!["results"] as? NSDictionary
+                    XCTAssert(resultsUpdated != nil && resultsUpdated!.count > 0)
+
+                    let totalEntriesUpdated = resultsUpdated!["totalEntries"] as? Int
+                    XCTAssert(totalEntriesUpdated != nil && totalEntries! == totalEntriesUpdated! + 1)
+
+                    dispatch_semaphore_signal(semaphore)
+                }
+            }
         }
         self.osc.listImages(entryCount: 3, includeThumb: false, completionHandler: completionHandler)
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
