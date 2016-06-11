@@ -13,8 +13,8 @@ let JPEG_EOI: [UInt8] = [0xFF, 0xD9]
 
 public extension OpenSphericalCamera {
 
-    public func _finishWlan() {
-        // TODO
+    public func _finishWlan(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
     }
 
     public func _startCapture() {

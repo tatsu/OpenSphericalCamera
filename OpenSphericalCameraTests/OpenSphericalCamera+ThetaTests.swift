@@ -112,4 +112,27 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
     */
+
+    func testFinishWlan() {
+        guard model == "RICOH THETA S" else {
+            return
+        }
+
+        // _finishWlan
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc._finishWlan(sessionId: self.sessionId) { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera._finishWlan")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
 }
