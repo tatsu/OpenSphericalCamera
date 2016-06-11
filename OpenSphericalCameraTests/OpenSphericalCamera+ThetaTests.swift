@@ -56,6 +56,9 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.takePicture")
+
             let state = jsonDic!["state"] as? String
             XCTAssert(state != nil && state! == "done")
 

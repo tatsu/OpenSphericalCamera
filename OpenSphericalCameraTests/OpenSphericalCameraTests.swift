@@ -91,6 +91,12 @@ class OpenSphericalCameraTests: XCTestCase {
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.startSession")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
 
@@ -108,6 +114,9 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(data != nil && data!.length > 0)
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.takePicture")
 
             let state = jsonDic!["state"] as? String
             XCTAssert(state != nil && state! == "done")
@@ -143,6 +152,12 @@ class OpenSphericalCameraTests: XCTestCase {
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.startSession")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
 
@@ -161,6 +176,12 @@ class OpenSphericalCameraTests: XCTestCase {
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.listImages")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
 
@@ -178,6 +199,12 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(data != nil && data!.length > 0)
                 let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
                 XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                let name = jsonDic!["name"] as? String
+                XCTAssert(name != nil && name! == "camera.getMetadata")
+                
+                let state = jsonDic!["state"] as? String
+                XCTAssert(state != nil && state! == "done")
 
                 let results = jsonDic!["results"] as? NSDictionary
                 XCTAssert(results != nil && results!.count > 0)
@@ -200,6 +227,9 @@ class OpenSphericalCameraTests: XCTestCase {
                     let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
                     XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
+                    let name = jsonDic!["name"] as? String
+                    XCTAssert(name != nil && name! == "camera.delete")
+
                     let state = jsonDic!["state"] as? String
                     XCTAssert(state != nil && state! == "done")
 
@@ -207,6 +237,12 @@ class OpenSphericalCameraTests: XCTestCase {
                         XCTAssert(data != nil && data!.length > 0)
                         let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
                         XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                        let name = jsonDic!["name"] as? String
+                        XCTAssert(name != nil && name! == "camera.listImages")
+
+                        let state = jsonDic!["state"] as? String
+                        XCTAssert(state != nil && state! == "done")
 
                         let resultsUpdated = jsonDic!["results"] as? NSDictionary
                         XCTAssert(resultsUpdated != nil && resultsUpdated!.count > 0)
