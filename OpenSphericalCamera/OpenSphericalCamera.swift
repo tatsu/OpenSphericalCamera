@@ -306,12 +306,12 @@ public class OpenSphericalCamera {
         self.execute("camera.getMetadata", parameters: parameters, completionHandler: completionHandler)
     }
 
-    public func getOptions() {
-        // TODO
+    public func getOptions(sessionId sessionId: String, optionNames: [String], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.getOptions", parameters: ["sessionId": sessionId, "optionNames": optionNames], completionHandler: completionHandler)
     }
 
-    public func setOptions() {
-        // TODO
+    public func setOptions(sessionId sessionId: String, options: [String: AnyObject], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.setOptions", parameters: ["sessionId": sessionId, "options": options], completionHandler: completionHandler)
     }
 
 }

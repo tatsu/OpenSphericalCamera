@@ -290,4 +290,92 @@ class OpenSphericalCameraTests: XCTestCase {
         }
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
+
+    func testGetAndSetOptions() {
+        var sessionId: String?
+
+        // startSession
+        var semaphore = dispatch_semaphore_create(0)
+        self.osc.startSession { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.startSession")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            let results = jsonDic!["results"] as? NSDictionary
+            XCTAssert(results != nil && results!.count > 0)
+
+            sessionId = results!["sessionId"] as? String
+            XCTAssert(sessionId != nil && !sessionId!.isEmpty)
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+        // getOptions
+        semaphore = dispatch_semaphore_create(0)
+        self.osc.getOptions(sessionId: sessionId!, optionNames: ["exposureProgram", "exposureProgramSupport"]) {
+            (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.getOptions")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            let results = jsonDic!["results"] as? NSDictionary
+            XCTAssert(results != nil && results!.count > 0)
+
+            let options = results!["options"] as? NSDictionary
+            XCTAssert(options != nil && options!.count == 2)
+
+            let exposureProgram = options!["exposureProgram"] as? Int
+            XCTAssert(exposureProgram != nil)
+
+            let exposureProgramSupport = options!["exposureProgramSupport"] as? [Int]
+            XCTAssert(exposureProgramSupport != nil && exposureProgramSupport!.contains(exposureProgram!))
+
+            // setOptions
+            self.osc.setOptions(sessionId: sessionId!, options: ["exposureProgram": exposureProgram!]) { (data, response, error) in
+                XCTAssert(data != nil && data!.length > 0)
+                let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                let name = jsonDic!["name"] as? String
+                XCTAssert(name != nil && name! == "camera.setOptions")
+
+                let state = jsonDic!["state"] as? String
+                XCTAssert(state != nil && state! == "done")
+
+                dispatch_semaphore_signal(semaphore)
+            }
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+        // closeSession
+        semaphore = dispatch_semaphore_create(0)
+        self.osc.closeSession(sessionId: sessionId!) {
+            (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.closeSession")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
 }
