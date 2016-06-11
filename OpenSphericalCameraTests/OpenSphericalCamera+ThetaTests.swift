@@ -47,6 +47,42 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
         super.tearDown()
     }
 
+    func testListAll() {
+        guard model == "RICOH THETA S" else {
+            return
+        }
+
+        // _listAll
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc._listAll(entryCount: 3, detail: false, sort: "newest") {
+            (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera._listAll")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            let results = jsonDic!["results"] as? NSDictionary
+            XCTAssert(results != nil && results!.count > 0)
+
+            let entries = results!["entries"] as? [NSDictionary]
+            XCTAssert(entries != nil && entries!.count > 0)
+
+            let uri = entries![0]["uri"] as? String
+            XCTAssert(uri != nil && !uri!.isEmpty)
+
+            let totalEntries = results!["totalEntries"] as? Int
+            XCTAssert(totalEntries != nil)
+            
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+
     func testGetImage() {
         guard model == "RICOH THETA S" else {
             return

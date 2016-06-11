@@ -25,8 +25,18 @@ public extension OpenSphericalCamera {
 
     }
 
-    public func _listAll() {
-
+    public func _listAll(entryCount entryCount: Int, continuationToken: String? = nil, detail: Bool? = nil, sort: String? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        var parameters: [String: AnyObject] = ["entryCount": entryCount]
+        if let continuationToken = continuationToken {
+            parameters["continuationToken"] = continuationToken
+        }
+        if let detail = detail {
+            parameters["detail"] = detail
+        }
+        if let sort = sort {
+            parameters["sort"] = sort
+        }
+        self.execute("camera._listAll", parameters: parameters, completionHandler: completionHandler)
     }
 
     public func _getImage(fileUri fileUri: String, _type: String? = "full", completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
