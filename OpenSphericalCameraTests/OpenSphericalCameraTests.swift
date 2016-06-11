@@ -23,6 +23,53 @@ class OpenSphericalCameraTests: XCTestCase {
         super.tearDown()
     }
 
+    func startSession() -> String {
+        var sessionId: String?
+
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.startSession { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.startSession")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            let results = jsonDic!["results"] as? NSDictionary
+            XCTAssert(results != nil && results!.count > 0)
+
+            sessionId = results!["sessionId"] as? String
+            XCTAssert(sessionId != nil && !sessionId!.isEmpty)
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+        return sessionId!
+    }
+
+    func closeSession(sessionId: String) {
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.closeSession(sessionId: sessionId) {
+            (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.closeSession")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+
     func testInfo() {
         XCTAssert(osc.httpUpdatesPort != 0)
 
@@ -82,33 +129,12 @@ class OpenSphericalCameraTests: XCTestCase {
     }
 
     func testTakePictureAndGetImage() {
-        var sessionId: String?
 
         // startSession
-        var semaphore = dispatch_semaphore_create(0)
-        self.osc.startSession { (data, response, error) in
-            XCTAssert(data != nil && data!.length > 0)
-            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-            let name = jsonDic!["name"] as? String
-            XCTAssert(name != nil && name! == "camera.startSession")
-
-            let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
-
-            let results = jsonDic!["results"] as? NSDictionary
-            XCTAssert(results != nil && results!.count > 0)
-
-            sessionId = results!["sessionId"] as? String
-            XCTAssert(sessionId != nil && !sessionId!.isEmpty)
-
-            dispatch_semaphore_signal(semaphore)
-        }
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        let sessionId = startSession()
 
         // takePicture (uses Execute and Status commands)
-        semaphore = dispatch_semaphore_create(0)
+        let semaphore = dispatch_semaphore_create(0)
         var completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
         completionHandler = { (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
@@ -135,55 +161,20 @@ class OpenSphericalCameraTests: XCTestCase {
                 dispatch_semaphore_signal(semaphore)
             }
         }
-        self.osc.takePicture(sessionId: sessionId!, completionHandler: completionHandler)
+        self.osc.takePicture(sessionId: sessionId, completionHandler: completionHandler)
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
 
         // closeSession
-        semaphore = dispatch_semaphore_create(0)
-        self.osc.closeSession(sessionId: sessionId!) { (data, response, error) in
-            XCTAssert(data != nil && data!.length > 0)
-            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-            let name = jsonDic!["name"] as? String
-            XCTAssert(name != nil && name! == "camera.closeSession")
-
-            let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
-
-            dispatch_semaphore_signal(semaphore)
-        }
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        closeSession(sessionId)
     }
 
     func testListImagesAndGetMetadataAndDelete() {
-        var sessionId: String?
 
         // startSession
-        var semaphore = dispatch_semaphore_create(0)
-        self.osc.startSession { (data, response, error) in
-            XCTAssert(data != nil && data!.length > 0)
-            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-            let name = jsonDic!["name"] as? String
-            XCTAssert(name != nil && name! == "camera.startSession")
-
-            let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
-
-            let results = jsonDic!["results"] as? NSDictionary
-            XCTAssert(results != nil && results!.count > 0)
-
-            sessionId = results!["sessionId"] as? String
-            XCTAssert(sessionId != nil && !sessionId!.isEmpty)
-
-            dispatch_semaphore_signal(semaphore)
-        }
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        let sessionId = startSession()
 
         // listImages
-        semaphore = dispatch_semaphore_create(0)
+        let semaphore = dispatch_semaphore_create(0)
         var completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
         completionHandler = { (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
@@ -273,53 +264,17 @@ class OpenSphericalCameraTests: XCTestCase {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
 
         // closeSession
-        semaphore = dispatch_semaphore_create(0)
-        self.osc.closeSession(sessionId: sessionId!) {
-            (data, response, error) in
-            XCTAssert(data != nil && data!.length > 0)
-            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-            let name = jsonDic!["name"] as? String
-            XCTAssert(name != nil && name! == "camera.closeSession")
-
-            let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
-
-            dispatch_semaphore_signal(semaphore)
-        }
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        closeSession(sessionId)
     }
 
     func testGetAndSetOptions() {
-        var sessionId: String?
 
         // startSession
-        var semaphore = dispatch_semaphore_create(0)
-        self.osc.startSession { (data, response, error) in
-            XCTAssert(data != nil && data!.length > 0)
-            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-            let name = jsonDic!["name"] as? String
-            XCTAssert(name != nil && name! == "camera.startSession")
-
-            let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
-
-            let results = jsonDic!["results"] as? NSDictionary
-            XCTAssert(results != nil && results!.count > 0)
-
-            sessionId = results!["sessionId"] as? String
-            XCTAssert(sessionId != nil && !sessionId!.isEmpty)
-
-            dispatch_semaphore_signal(semaphore)
-        }
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        let sessionId = startSession()
 
         // getOptions
-        semaphore = dispatch_semaphore_create(0)
-        self.osc.getOptions(sessionId: sessionId!, optionNames: ["exposureProgram", "exposureProgramSupport"]) {
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.getOptions(sessionId: sessionId, optionNames: ["exposureProgram", "exposureProgramSupport"]) {
             (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
@@ -344,7 +299,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(exposureProgramSupport != nil && exposureProgramSupport!.contains(exposureProgram!))
 
             // setOptions
-            self.osc.setOptions(sessionId: sessionId!, options: ["exposureProgram": exposureProgram!]) { (data, response, error) in
+            self.osc.setOptions(sessionId: sessionId, options: ["exposureProgram": exposureProgram!]) { (data, response, error) in
                 XCTAssert(data != nil && data!.length > 0)
                 let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
                 XCTAssert(jsonDic != nil && jsonDic!.count > 0)
@@ -361,21 +316,6 @@ class OpenSphericalCameraTests: XCTestCase {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
 
         // closeSession
-        semaphore = dispatch_semaphore_create(0)
-        self.osc.closeSession(sessionId: sessionId!) {
-            (data, response, error) in
-            XCTAssert(data != nil && data!.length > 0)
-            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-            let name = jsonDic!["name"] as? String
-            XCTAssert(name != nil && name! == "camera.closeSession")
-
-            let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
-
-            dispatch_semaphore_signal(semaphore)
-        }
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        closeSession(sessionId)
     }
 }
