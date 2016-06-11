@@ -135,8 +135,7 @@ class OpenSphericalCameraTests: XCTestCase {
 
         // takePicture (uses Execute and Status commands)
         let semaphore = dispatch_semaphore_create(0)
-        var completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
-        completionHandler = { (data, response, error) in
+        self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
@@ -175,7 +174,6 @@ class OpenSphericalCameraTests: XCTestCase {
 
             }
         }
-        self.osc.takePicture(sessionId: sessionId, completionHandler: completionHandler)
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
 
         // closeSession
@@ -189,8 +187,7 @@ class OpenSphericalCameraTests: XCTestCase {
 
         // listImages
         let semaphore = dispatch_semaphore_create(0)
-        var completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
-        completionHandler = { (data, response, error) in
+        self.osc.listImages(entryCount: 3, includeThumb: false) { (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
@@ -221,7 +218,7 @@ class OpenSphericalCameraTests: XCTestCase {
 
                 let name = jsonDic!["name"] as? String
                 XCTAssert(name != nil && name! == "camera.getMetadata")
-                
+
                 let state = jsonDic!["state"] as? String
                 XCTAssert(state != nil && state! == "done")
 
@@ -243,7 +240,6 @@ class OpenSphericalCameraTests: XCTestCase {
                 dispatch_semaphore_signal(semaphore)
             }
         }
-        self.osc.listImages(entryCount: 3, includeThumb: false, completionHandler: completionHandler)
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
 
         // closeSession

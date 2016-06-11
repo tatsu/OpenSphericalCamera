@@ -90,8 +90,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
 
         // takePicture (uses Execute and Status commands)
         let semaphore = dispatch_semaphore_create(0)
-        var completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
-        completionHandler = { (data, response, error) in
+        self.osc.takePicture(sessionId: self.sessionId) { (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
@@ -121,7 +120,6 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                 }
             }
         }
-        self.osc.takePicture(sessionId: self.sessionId, completionHandler: completionHandler)
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
 
