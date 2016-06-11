@@ -149,6 +149,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
     }
     */
 
+    /*
     func testFinishWlan() {
         guard model == "RICOH THETA S" else {
             return
@@ -171,4 +172,5 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
         }
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
+    */
 }
