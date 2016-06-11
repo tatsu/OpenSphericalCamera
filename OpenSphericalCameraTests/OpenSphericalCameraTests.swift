@@ -128,7 +128,7 @@ class OpenSphericalCameraTests: XCTestCase {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
 
-    func testTakePictureAndGetImage() {
+    func testTakePictureAndGetImageAndDelete() {
 
         // startSession
         let sessionId = startSession()
@@ -158,7 +158,21 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(data != nil && data!.length > 0)
                 XCTAssertNotNil(UIImage(data: data!))
 
-                dispatch_semaphore_signal(semaphore)
+                // delete
+                self.osc.delete(fileUri: fileUri!) { (data, response, error) in
+                    XCTAssert(data != nil && data!.length > 0)
+                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                    XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                    let name = jsonDic!["name"] as? String
+                    XCTAssert(name != nil && name! == "camera.delete")
+
+                    let state = jsonDic!["state"] as? String
+                    XCTAssert(state != nil && state! == "done")
+
+                    dispatch_semaphore_signal(semaphore)
+                }
+
             }
         }
         self.osc.takePicture(sessionId: sessionId, completionHandler: completionHandler)
@@ -168,7 +182,7 @@ class OpenSphericalCameraTests: XCTestCase {
         closeSession(sessionId)
     }
 
-    func testListImagesAndGetMetadataAndDelete() {
+    func testListImagesAndGetMetadata() {
 
         // startSession
         let sessionId = startSession()
@@ -226,38 +240,7 @@ class OpenSphericalCameraTests: XCTestCase {
                 let ProjectionType = xmp!["ProjectionType"] as? String
                 XCTAssert(ProjectionType != nil && ProjectionType == "equirectangular")
 
-                // delete
-                self.osc.delete(fileUri: uri!) { (data, response, error) in
-                    XCTAssert(data != nil && data!.length > 0)
-                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-                    XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-                    let name = jsonDic!["name"] as? String
-                    XCTAssert(name != nil && name! == "camera.delete")
-
-                    let state = jsonDic!["state"] as? String
-                    XCTAssert(state != nil && state! == "done")
-
-                    self.osc.listImages(entryCount: 1, includeThumb: false) { (data, response, error) in
-                        XCTAssert(data != nil && data!.length > 0)
-                        let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-                        XCTAssert(jsonDic != nil && jsonDic!.count > 0)
-
-                        let name = jsonDic!["name"] as? String
-                        XCTAssert(name != nil && name! == "camera.listImages")
-
-                        let state = jsonDic!["state"] as? String
-                        XCTAssert(state != nil && state! == "done")
-
-                        let resultsUpdated = jsonDic!["results"] as? NSDictionary
-                        XCTAssert(resultsUpdated != nil && resultsUpdated!.count > 0)
-
-                        let totalEntriesUpdated = resultsUpdated!["totalEntries"] as? Int
-                        XCTAssert(totalEntriesUpdated != nil && totalEntries! == totalEntriesUpdated! + 1)
-
-                        dispatch_semaphore_signal(semaphore)
-                    }
-                }
+                dispatch_semaphore_signal(semaphore)
             }
         }
         self.osc.listImages(entryCount: 3, includeThumb: false, completionHandler: completionHandler)
