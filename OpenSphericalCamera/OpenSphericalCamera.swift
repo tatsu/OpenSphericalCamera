@@ -238,8 +238,8 @@ public class OpenSphericalCamera {
         self.execute("camera.updateSession", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
     }
 
-    public func closeSession(sessionId sessionId: String) {
-        self.execute("camera.closeSession", parameters: ["sessionId": sessionId])
+    public func closeSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera.closeSession", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
     }
 
     public func takePicture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {

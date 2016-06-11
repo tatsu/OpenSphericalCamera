@@ -38,7 +38,11 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
 
         // closeSession
-        self.osc.closeSession(sessionId: self.sessionId)
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.closeSession(sessionId: self.sessionId) { (data, response, error) in
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
 
         super.tearDown()
     }
