@@ -288,7 +288,7 @@ public class OpenSphericalCamera {
         self.execute("camera.listImages", parameters: parameters, completionHandler: completionHandler)
     }
 
-    public func delete(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func delete(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
         self.execute("camera.delete", parameters: parameters, completionHandler: completionHandler)
     }
