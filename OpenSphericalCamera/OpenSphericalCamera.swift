@@ -301,8 +301,9 @@ public class OpenSphericalCamera {
         self.execute("camera.getImage", parameters: parameters, completionHandler: completionHandler)
     }
 
-    public func getMetadata() {
-        // TODO
+    public func getMetadata(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        let parameters: [String: AnyObject] = ["fileUri": fileUri]
+        self.execute("camera.getMetadata", parameters: parameters, completionHandler: completionHandler)
     }
 
     public func getOptions() {

@@ -133,7 +133,7 @@ class OpenSphericalCameraTests: XCTestCase {
         self.osc.closeSession(sessionId: sessionId!)
     }
 
-    func testListImagesAndDelete() {
+    func testListImagesAndGetMetadataAndDelete() {
         var sessionId: String?
 
         // startSession
@@ -173,27 +173,49 @@ class OpenSphericalCameraTests: XCTestCase {
             let totalEntries = results!["totalEntries"] as? Int
             XCTAssert(totalEntries != nil)
 
-            // delete
-            self.osc.delete(fileUri: uri!) { (data, response, error) in
+            // getMetadata
+            self.osc.getMetadata(fileUri: uri!) { (data, response, error) in
                 XCTAssert(data != nil && data!.length > 0)
                 let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
                 XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
-                let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && state! == "done")
+                let results = jsonDic!["results"] as? NSDictionary
+                XCTAssert(results != nil && results!.count > 0)
 
-                self.osc.listImages(entryCount: 1, includeThumb: false) { (data, response, error) in
+                let exif = results!["exif"] as? NSDictionary
+                XCTAssert(exif != nil && exif!.count > 0)
+
+                let ExifVersion = exif!["ExifVersion"] as? String
+                XCTAssert(ExifVersion != nil && !ExifVersion!.isEmpty)
+
+                let xmp = results!["xmp"] as? NSDictionary
+                XCTAssert(xmp != nil && xmp!.count > 0)
+
+                let ProjectionType = xmp!["ProjectionType"] as? String
+                XCTAssert(ProjectionType != nil && ProjectionType == "equirectangular")
+
+                // delete
+                self.osc.delete(fileUri: uri!) { (data, response, error) in
                     XCTAssert(data != nil && data!.length > 0)
                     let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
                     XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
-                    let resultsUpdated = jsonDic!["results"] as? NSDictionary
-                    XCTAssert(resultsUpdated != nil && resultsUpdated!.count > 0)
+                    let state = jsonDic!["state"] as? String
+                    XCTAssert(state != nil && state! == "done")
 
-                    let totalEntriesUpdated = resultsUpdated!["totalEntries"] as? Int
-                    XCTAssert(totalEntriesUpdated != nil && totalEntries! == totalEntriesUpdated! + 1)
+                    self.osc.listImages(entryCount: 1, includeThumb: false) { (data, response, error) in
+                        XCTAssert(data != nil && data!.length > 0)
+                        let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                        XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
-                    dispatch_semaphore_signal(semaphore)
+                        let resultsUpdated = jsonDic!["results"] as? NSDictionary
+                        XCTAssert(resultsUpdated != nil && resultsUpdated!.count > 0)
+
+                        let totalEntriesUpdated = resultsUpdated!["totalEntries"] as? Int
+                        XCTAssert(totalEntriesUpdated != nil && totalEntries! == totalEntriesUpdated! + 1)
+
+                        dispatch_semaphore_signal(semaphore)
+                    }
                 }
             }
         }
