@@ -138,7 +138,7 @@ public class OpenSphericalCamera {
     public func checkForUpdates(stateFingerprint stateFingerprint: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         self.cancel()
 
-        let url = NSURL(string: "http://\(ipAddress):\(httpPort)/osc/checkForUpdates")!
+        let url = NSURL(string: "http://\(ipAddress):\(httpUpdatesPort)/osc/checkForUpdates")!
         let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "POST"
         request.setValue("application/json; charaset=utf-8", forHTTPHeaderField: "Content-Type")
