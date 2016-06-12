@@ -147,6 +147,60 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
     }
     */
 
+    func testStopSelfTimer() {
+        guard model == "RICOH THETA S" else {
+            return
+        }
+
+        // setOptions
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.setOptions(sessionId: sessionId, options: ["captureMode": "image", "exposureDelay": 5]) { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.setOptions")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            // takePicture
+            self.osc.takePicture(sessionId: self.sessionId)
+            sleep(3)
+
+            // _stopSelfTimer
+            self.osc._stopSelfTimer { (data, response, error) in
+                XCTAssert(data != nil && data!.length > 0)
+                let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                let name = jsonDic!["name"] as? String
+                XCTAssert(name != nil && name! == "camera._stopSelfTimer")
+
+                let state = jsonDic!["state"] as? String
+                XCTAssert(state != nil && state! == "done")
+
+                // setOptions
+                self.osc.setOptions(sessionId: self.sessionId, options: ["exposureDelay": 0]) {
+                    (data, response, error) in
+                    XCTAssert(data != nil && data!.length > 0)
+                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                    XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                    let name = jsonDic!["name"] as? String
+                    XCTAssert(name != nil && name! == "camera.setOptions")
+
+                    let state = jsonDic!["state"] as? String
+                    XCTAssert(state != nil && state! == "done")
+
+                    dispatch_semaphore_signal(semaphore)
+                }
+            }
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+
     /*
     func testFinishWlan() {
         guard model == "RICOH THETA S" else {

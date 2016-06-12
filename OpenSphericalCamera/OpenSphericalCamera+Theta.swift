@@ -109,7 +109,7 @@ public extension OpenSphericalCamera {
         self.execute("camera._getLivePreview", parameters: ["sessionId": sessionId], delegate: GetLivePreviewDelegate(openSphericalCamera: self, completionHandler: completionHandler))
     }
 
-    public func _stopSelfTimer() {
-        // TODO
+    public func _stopSelfTimer(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera._stopSelfTimer", completionHandler: completionHandler)
     }
 }
