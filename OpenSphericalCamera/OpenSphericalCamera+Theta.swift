@@ -18,6 +18,11 @@ public extension OpenSphericalCamera {
         case Oldest = "oldest"
     }
 
+    public enum Type: String {
+        case Full = "full"
+        case Thumb = "thumb"
+    }
+
     public func _finishWlan(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
         self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: getWaitDoneHandler(completionHandler))
     }
@@ -44,14 +49,14 @@ public extension OpenSphericalCamera {
         self.execute("camera._listAll", parameters: parameters, completionHandler: getWaitDoneHandler(completionHandler))
     }
 
-    public func getImage(fileUri fileUri: String, _type: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.getImage", parameters: ["fileUri": fileUri, "_type": _type], completionHandler: completionHandler)
+    public func getImage(fileUri fileUri: String, _type: Type, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.getImage", parameters: ["fileUri": fileUri, "_type": _type.rawValue], completionHandler: completionHandler)
     }
 
-    public func _getVideo(fileUri fileUri: String, _type: String? = "full", completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func _getVideo(fileUri fileUri: String, _type: Type? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         var parameters: [String: AnyObject] = ["fileUri": fileUri]
         if let _type = _type {
-            parameters["_type"] = _type
+            parameters["_type"] = _type.rawValue
         }
         self.execute("camera._getVideo", parameters: parameters, completionHandler: completionHandler)
     }

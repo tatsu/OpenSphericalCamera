@@ -104,11 +104,11 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                         XCTAssert(_latestFileUri != nil && !_latestFileUri!.isEmpty)
 
                         // _getVideo
-                        self.osc._getVideo(fileUri: _latestFileUri!, _type: "thumb") { (data, response, error) in
+                        self.osc._getVideo(fileUri: _latestFileUri!, _type: .Thumb) { (data, response, error) in
                             XCTAssert(data != nil && data!.length > 0)
                             XCTAssertNotNil(UIImage(data: data!))
 
-                            self.osc._getVideo(fileUri: _latestFileUri!, _type: "full") { (data, response, error) in
+                            self.osc._getVideo(fileUri: _latestFileUri!, _type: .Full) { (data, response, error) in
                                 XCTAssert(data != nil && data!.length > 0)
                                 // TODO: Check whether the data is mp4 or not.
 
@@ -195,11 +195,11 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                 XCTAssert(fileUri != nil && !fileUri!.isEmpty)
 
                 // getImage for Theta
-                self.osc.getImage(fileUri: fileUri!, _type: "thumb") { (data, response, error) in
+                self.osc.getImage(fileUri: fileUri!, _type: .Thumb) { (data, response, error) in
                     XCTAssert(data != nil && data!.length > 0)
                     XCTAssertNotNil(UIImage(data: data!))
 
-                    self.osc.getImage(fileUri: fileUri!, _type: "full") { (data, response, error) in
+                    self.osc.getImage(fileUri: fileUri!, _type: .Full) { (data, response, error) in
                         XCTAssert(data != nil && data!.length > 0)
                         XCTAssertNotNil(UIImage(data: data!))
 
