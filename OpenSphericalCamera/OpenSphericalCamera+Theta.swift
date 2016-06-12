@@ -17,12 +17,12 @@ public extension OpenSphericalCamera {
         self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
     }
 
-    public func _startCapture() {
-
+    public func _startCapture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera._startCapture", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
     }
 
-    public func _stopCapture() {
-
+    public func _stopCapture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera._stopCapture", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
     }
 
     public func _listAll(entryCount entryCount: Int, continuationToken: String? = nil, detail: Bool? = nil, sort: String? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
@@ -47,8 +47,12 @@ public extension OpenSphericalCamera {
         self.execute("camera.getImage", parameters: parameters, completionHandler: completionHandler)
     }
 
-    public func _getVideo() {
-        // TODO
+    public func _getVideo(fileUri fileUri: String, _type: String? = "full", completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        var parameters: [String: AnyObject] = ["fileUri": fileUri]
+        if let _type = _type {
+            parameters["_type"] = _type
+        }
+        self.execute("camera._getVideo", parameters: parameters, completionHandler: completionHandler)
     }
 
     private class GetLivePreviewDelegate: NSObject, NSURLSessionDataDelegate, NSURLSessionTaskDelegate {

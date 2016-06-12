@@ -47,6 +47,81 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
         super.tearDown()
     }
 
+    func testStartAndStopCaptureAndGetVideo() {
+        guard model == "RICOH THETA S" else {
+            return
+        }
+
+        // setOptions
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.setOptions(sessionId: sessionId, options: ["captureMode": "_video"]) { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.setOptions")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && state! == "done")
+
+            // _startCapture
+            self.osc._startCapture(sessionId: self.sessionId) { (data, response, error) in
+                XCTAssert(data != nil && data!.length > 0)
+                let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                let name = jsonDic!["name"] as? String
+                XCTAssert(name != nil && name! == "camera._startCapture")
+
+                let state = jsonDic!["state"] as? String
+                XCTAssert(state != nil && state! == "done")
+
+                sleep(1)
+
+                // _stopCapture
+                self.osc._stopCapture(sessionId: self.sessionId) { (data, response, error) in
+                    XCTAssert(data != nil && data!.length > 0)
+                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                    XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                    let name = jsonDic!["name"] as? String
+                    XCTAssert(name != nil && name! == "camera._stopCapture")
+
+                    let state = jsonDic!["state"] as? String
+                    XCTAssert(state != nil && state! == "done")
+
+                    // state
+                    self.osc.state { (data, response, error) in
+                        XCTAssert(data != nil && data!.length > 0)
+                        let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                        XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                        let state = jsonDic!["state"] as? NSDictionary
+                        XCTAssert(state != nil && state!.count > 0)
+
+                        let _latestFileUri = state!["_latestFileUri"] as? String
+                        XCTAssert(_latestFileUri != nil && !_latestFileUri!.isEmpty)
+
+                        // _getVideo
+                        self.osc._getVideo(fileUri: _latestFileUri!, _type: "thumb") { (data, response, error) in
+                            XCTAssert(data != nil && data!.length > 0)
+                            XCTAssertNotNil(UIImage(data: data!))
+
+                            self.osc._getVideo(fileUri: _latestFileUri!, _type: "full") { (data, response, error) in
+                                XCTAssert(data != nil && data!.length > 0)
+                                // TODO: Check whether the data is mp4 or not.
+
+                                dispatch_semaphore_signal(semaphore)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+
     func testListAll() {
         guard model == "RICOH THETA S" else {
             return
