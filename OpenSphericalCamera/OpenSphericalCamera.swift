@@ -242,18 +242,18 @@ public class OpenSphericalCamera {
         self.execute("camera.closeSession", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
     }
 
-    public func takePicture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func takePicture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
 
         var wrapHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
         wrapHandler = { (data, response, error) in
             guard let d = data where error == nil else {
-                completionHandler(data, response, error)
+                completionHandler?(data, response, error)
                 return
             }
 
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(d, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             guard let dic = jsonDic, state = dic["state"] as? String else {
-                completionHandler(data, response, error)
+                completionHandler?(data, response, error)
                 return
             }
 
@@ -266,7 +266,7 @@ public class OpenSphericalCamera {
             // case "done":
             // case "error":
             default:
-                completionHandler(data, response, error)
+                completionHandler?(data, response, error)
                 break
             }
         }
