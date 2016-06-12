@@ -133,45 +133,57 @@ class OpenSphericalCameraTests: XCTestCase {
         // startSession
         let sessionId = startSession()
 
-        // takePicture (uses Execute and Status commands)
+        // setOptions
         let semaphore = dispatch_semaphore_create(0)
-        self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
+        self.osc.setOptions(sessionId: sessionId, options: ["captureMode": "image"]) { (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
             XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
             let name = jsonDic!["name"] as? String
-            XCTAssert(name != nil && name! == "camera.takePicture")
+            XCTAssert(name != nil && name! == "camera.setOptions")
 
             let state = jsonDic!["state"] as? String
             XCTAssert(state != nil && state! == "done")
 
-            let results = jsonDic!["results"] as? NSDictionary
-            XCTAssert(results != nil && results!.count > 0)
-
-            let fileUri = results!["fileUri"] as? String
-            XCTAssert(fileUri != nil && !fileUri!.isEmpty)
-
-            // getImage
-            self.osc.getImage(fileUri: fileUri!) { (data, response, error) in
+            // takePicture
+            self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
                 XCTAssert(data != nil && data!.length > 0)
-                XCTAssertNotNil(UIImage(data: data!))
+                let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
-                // delete
-                self.osc.delete(fileUri: fileUri!) { (data, response, error) in
+                let name = jsonDic!["name"] as? String
+                XCTAssert(name != nil && name! == "camera.takePicture")
+
+                let state = jsonDic!["state"] as? String
+                XCTAssert(state != nil && state! == "done")
+
+                let results = jsonDic!["results"] as? NSDictionary
+                XCTAssert(results != nil && results!.count > 0)
+
+                let fileUri = results!["fileUri"] as? String
+                XCTAssert(fileUri != nil && !fileUri!.isEmpty)
+
+                // getImage
+                self.osc.getImage(fileUri: fileUri!) { (data, response, error) in
                     XCTAssert(data != nil && data!.length > 0)
-                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-                    XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+                    XCTAssertNotNil(UIImage(data: data!))
 
-                    let name = jsonDic!["name"] as? String
-                    XCTAssert(name != nil && name! == "camera.delete")
+                    // delete
+                    self.osc.delete(fileUri: fileUri!) { (data, response, error) in
+                        XCTAssert(data != nil && data!.length > 0)
+                        let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                        XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
-                    let state = jsonDic!["state"] as? String
-                    XCTAssert(state != nil && state! == "done")
+                        let name = jsonDic!["name"] as? String
+                        XCTAssert(name != nil && name! == "camera.delete")
 
-                    dispatch_semaphore_signal(semaphore)
+                        let state = jsonDic!["state"] as? String
+                        XCTAssert(state != nil && state! == "done")
+
+                        dispatch_semaphore_signal(semaphore)
+                    }
                 }
-
             }
         }
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
