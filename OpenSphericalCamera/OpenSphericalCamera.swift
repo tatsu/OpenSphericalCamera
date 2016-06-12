@@ -230,22 +230,9 @@ public class OpenSphericalCamera {
         case unexpected	// 503 Other errors
     }
 
-    public func startSession(completionHandler completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.startSession", completionHandler: completionHandler)
-    }
-
-    public func updateSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.updateSession", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
-    }
-
-    public func closeSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-        self.execute("camera.closeSession", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
-    }
-
-    public func takePicture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-
-        var wrapHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
-        wrapHandler = { (data, response, error) in
+    func getWaitDoneHandler(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) -> (NSData?, NSURLResponse?, NSError?) -> Void {
+        var waitDoneHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
+        waitDoneHandler = { (data, response, error) in
             guard let d = data where error == nil else {
                 completionHandler?(data, response, error)
                 return
@@ -261,17 +248,32 @@ public class OpenSphericalCamera {
             case "inProgress":
                 if let id = dic["id"] as? String {
                     sleep(1)
-                    self.status(id: id, completionHandler: wrapHandler)
+                    self.status(id: id, completionHandler: waitDoneHandler)
                 }
             // case "done":
             // case "error":
             default:
                 completionHandler?(data, response, error)
-                break
             }
         }
 
-        self.execute("camera.takePicture", parameters: ["sessionId": sessionId], completionHandler: wrapHandler)
+        return waitDoneHandler
+    }
+
+    public func startSession(completionHandler completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.startSession", completionHandler: getWaitDoneHandler(completionHandler))
+    }
+
+    public func updateSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.updateSession", parameters: ["sessionId": sessionId], completionHandler: getWaitDoneHandler(completionHandler))
+    }
+
+    public func closeSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera.closeSession", parameters: ["sessionId": sessionId], completionHandler: getWaitDoneHandler(completionHandler))
+    }
+
+    public func takePicture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera.takePicture", parameters: ["sessionId": sessionId], completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func listImages(entryCount entryCount: Int, maxSize: Int? = nil, continuationToken: String? = nil, includeThumb: Bool? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
@@ -285,12 +287,12 @@ public class OpenSphericalCamera {
         if let includeThumb = includeThumb {
             parameters["includeThumb"] = includeThumb
         }
-        self.execute("camera.listImages", parameters: parameters, completionHandler: completionHandler)
+        self.execute("camera.listImages", parameters: parameters, completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func delete(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
-        self.execute("camera.delete", parameters: parameters, completionHandler: completionHandler)
+        self.execute("camera.delete", parameters: parameters, completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func getImage(fileUri fileUri: String, maxSize: Int? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
@@ -303,15 +305,15 @@ public class OpenSphericalCamera {
 
     public func getMetadata(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
-        self.execute("camera.getMetadata", parameters: parameters, completionHandler: completionHandler)
+        self.execute("camera.getMetadata", parameters: parameters, completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func getOptions(sessionId sessionId: String, optionNames: [String], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.getOptions", parameters: ["sessionId": sessionId, "optionNames": optionNames], completionHandler: completionHandler)
+        self.execute("camera.getOptions", parameters: ["sessionId": sessionId, "optionNames": optionNames], completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func setOptions(sessionId sessionId: String, options: [String: AnyObject], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.setOptions", parameters: ["sessionId": sessionId, "options": options], completionHandler: completionHandler)
+        self.execute("camera.setOptions", parameters: ["sessionId": sessionId, "options": options], completionHandler: getWaitDoneHandler(completionHandler))
     }
 
 }

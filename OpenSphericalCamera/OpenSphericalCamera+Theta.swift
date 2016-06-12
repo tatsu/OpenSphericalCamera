@@ -14,15 +14,15 @@ let JPEG_EOI: [UInt8] = [0xFF, 0xD9]
 public extension OpenSphericalCamera {
 
     public func _finishWlan(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-        self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
+        self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func _startCapture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-        self.execute("camera._startCapture", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
+        self.execute("camera._startCapture", parameters: ["sessionId": sessionId], completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func _stopCapture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-        self.execute("camera._stopCapture", parameters: ["sessionId": sessionId], completionHandler: completionHandler)
+        self.execute("camera._stopCapture", parameters: ["sessionId": sessionId], completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func _listAll(entryCount entryCount: Int, continuationToken: String? = nil, detail: Bool? = nil, sort: String? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
@@ -36,7 +36,7 @@ public extension OpenSphericalCamera {
         if let sort = sort {
             parameters["sort"] = sort
         }
-        self.execute("camera._listAll", parameters: parameters, completionHandler: completionHandler)
+        self.execute("camera._listAll", parameters: parameters, completionHandler: getWaitDoneHandler(completionHandler))
     }
 
     public func _getImage(fileUri fileUri: String, _type: String? = "full", completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
@@ -114,6 +114,6 @@ public extension OpenSphericalCamera {
     }
 
     public func _stopSelfTimer(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-        self.execute("camera._stopSelfTimer", completionHandler: completionHandler)
+        self.execute("camera._stopSelfTimer", completionHandler: getWaitDoneHandler(completionHandler))
     }
 }
