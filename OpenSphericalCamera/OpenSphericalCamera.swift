@@ -75,6 +75,12 @@ public class OpenSphericalCamera {
         return info
     }()
 
+    public enum State: String {
+        case InProgress = "inProgress"
+        case Done = "done"
+        case Error = "error"
+    }
+
     public class func sharedCamera(ipAddress ipAddress: String = "192.168.1.1", httpPort: Int = 80) -> OpenSphericalCamera {
         sharedInstance.setIpAddress(ipAddress)
         sharedInstance.setHttpPort(httpPort)
@@ -239,19 +245,21 @@ public class OpenSphericalCamera {
             }
 
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(d, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-            guard let dic = jsonDic, state = dic["state"] as? String else {
+            guard let dic = jsonDic, rawState = dic["state"] as? String, state = State(rawValue: rawState) else {
                 completionHandler?(data, response, error)
                 return
             }
 
             switch state {
-            case "inProgress":
+            case .InProgress:
                 if let id = dic["id"] as? String {
                     sleep(1)
                     self.status(id: id, completionHandler: waitDoneHandler)
                 }
-            // case "done":
-            // case "error":
+            case .Done:
+                fallthrough
+            case .Error:
+                fallthrough
             default:
                 completionHandler?(data, response, error)
             }

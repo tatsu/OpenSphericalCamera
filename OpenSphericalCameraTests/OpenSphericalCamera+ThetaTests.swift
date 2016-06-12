@@ -63,7 +63,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.setOptions")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             // _startCapture
             self.osc._startCapture(sessionId: self.sessionId) { (data, response, error) in
@@ -75,7 +75,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera._startCapture")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && state! == "done")
+                XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                 sleep(1)
 
@@ -89,7 +89,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                     XCTAssert(name != nil && name! == "camera._stopCapture")
 
                     let state = jsonDic!["state"] as? String
-                    XCTAssert(state != nil && state! == "done")
+                    XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                     // state
                     self.osc.state { (data, response, error) in
@@ -139,7 +139,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera._listAll")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
@@ -174,7 +174,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.setOptions")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             // takePicture
             self.osc.takePicture(sessionId: self.sessionId) { (data, response, error) in
@@ -186,7 +186,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.takePicture")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && state! == "done")
+                XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                 let results = jsonDic!["results"] as? NSDictionary
                 XCTAssert(results != nil && results!.count > 0)
@@ -251,7 +251,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.setOptions")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             self.osc.setOptions(sessionId: self.sessionId, options: ["exposureDelay": 5]) { (data, response, error) in
                 XCTAssert(data != nil && data!.length > 0)
@@ -262,7 +262,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.setOptions")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && state! == "done")
+                XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                 // takePicture
                 self.osc.takePicture(sessionId: self.sessionId)
@@ -278,7 +278,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                     XCTAssert(name != nil && name! == "camera._stopSelfTimer")
 
                     let state = jsonDic!["state"] as? String
-                    XCTAssert(state != nil && state! == "done")
+                    XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                     // setOptions
                     self.osc.setOptions(sessionId: self.sessionId, options: ["exposureDelay": 0]) {
@@ -291,7 +291,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                         XCTAssert(name != nil && name! == "camera.setOptions")
 
                         let state = jsonDic!["state"] as? String
-                        XCTAssert(state != nil && state! == "done")
+                        XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                         dispatch_semaphore_signal(semaphore)
                     }
@@ -318,7 +318,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera._finishWlan")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             dispatch_semaphore_signal(semaphore)
         }

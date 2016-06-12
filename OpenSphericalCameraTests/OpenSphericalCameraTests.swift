@@ -36,7 +36,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.startSession")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
@@ -63,7 +63,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.closeSession")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             dispatch_semaphore_signal(semaphore)
         }
@@ -144,7 +144,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.setOptions")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             // takePicture
             self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
@@ -156,7 +156,7 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.takePicture")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && state! == "done")
+                XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                 let results = jsonDic!["results"] as? NSDictionary
                 XCTAssert(results != nil && results!.count > 0)
@@ -179,7 +179,7 @@ class OpenSphericalCameraTests: XCTestCase {
                         XCTAssert(name != nil && name! == "camera.delete")
 
                         let state = jsonDic!["state"] as? String
-                        XCTAssert(state != nil && state! == "done")
+                        XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                         dispatch_semaphore_signal(semaphore)
                     }
@@ -208,7 +208,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.listImages")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
@@ -232,7 +232,7 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.getMetadata")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && state! == "done")
+                XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                 let results = jsonDic!["results"] as? NSDictionary
                 XCTAssert(results != nil && results!.count > 0)
@@ -275,7 +275,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.getOptions")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && state! == "done")
+            XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
             let results = jsonDic!["results"] as? NSDictionary
             XCTAssert(results != nil && results!.count > 0)
@@ -299,7 +299,7 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.setOptions")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && state! == "done")
+                XCTAssert(state != nil && OpenSphericalCamera.State(rawValue: state!) == .Done)
 
                 dispatch_semaphore_signal(semaphore)
             }
