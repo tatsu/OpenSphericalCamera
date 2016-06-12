@@ -129,7 +129,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
 
         // _listAll
         let semaphore = dispatch_semaphore_create(0)
-        self.osc._listAll(entryCount: 3, detail: false, sort: "newest") {
+        self.osc._listAll(entryCount: 3, detail: false, sort: .Newest) {
             (data, response, error) in
             XCTAssert(data != nil && data!.length > 0)
             let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
