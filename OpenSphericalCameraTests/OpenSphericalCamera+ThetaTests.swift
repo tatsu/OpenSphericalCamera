@@ -194,12 +194,12 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
                 let fileUri = results!["fileUri"] as? String
                 XCTAssert(fileUri != nil && !fileUri!.isEmpty)
 
-                // _getImage
-                self.osc._getImage(fileUri: fileUri!, _type: "thumb") { (data, response, error) in
+                // getImage for Theta
+                self.osc.getImage(fileUri: fileUri!, _type: "thumb") { (data, response, error) in
                     XCTAssert(data != nil && data!.length > 0)
                     XCTAssertNotNil(UIImage(data: data!))
 
-                    self.osc._getImage(fileUri: fileUri!, _type: "full") { (data, response, error) in
+                    self.osc.getImage(fileUri: fileUri!, _type: "full") { (data, response, error) in
                         XCTAssert(data != nil && data!.length > 0)
                         XCTAssertNotNil(UIImage(data: data!))
 

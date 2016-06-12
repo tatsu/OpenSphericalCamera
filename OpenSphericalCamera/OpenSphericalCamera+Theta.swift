@@ -39,12 +39,8 @@ public extension OpenSphericalCamera {
         self.execute("camera._listAll", parameters: parameters, completionHandler: getWaitDoneHandler(completionHandler))
     }
 
-    public func _getImage(fileUri fileUri: String, _type: String? = "full", completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        var parameters: [String: AnyObject] = ["fileUri": fileUri]
-        if let _type = _type {
-            parameters["_type"] = _type
-        }
-        self.execute("camera.getImage", parameters: parameters, completionHandler: completionHandler)
+    public func getImage(fileUri fileUri: String, _type: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.getImage", parameters: ["fileUri": fileUri, "_type": _type], completionHandler: completionHandler)
     }
 
     public func _getVideo(fileUri fileUri: String, _type: String? = "full", completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
