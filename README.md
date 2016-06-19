@@ -24,7 +24,7 @@ platform :ios, '9.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-  pod 'OpenSphericalCamera', '~> 0.0.1'
+  pod 'OpenSphericalCamera', '~> 0.1.0'
 end
 ```
 
