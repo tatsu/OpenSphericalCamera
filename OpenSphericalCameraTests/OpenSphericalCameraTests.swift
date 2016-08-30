@@ -82,6 +82,7 @@ class OpenSphericalCameraTests: XCTestCase {
         XCTAssert(osc.info.endpoints.httpUpdatesPort != 0)
         XCTAssert(osc.info.uptime != 0)
         XCTAssertFalse(osc.info.api.isEmpty)
+        XCTAssert(Set(osc.info.apiLevel).isSubsetOf(Set([1, 2]))) // v2
     }
 
     func testStateAndCheckForUpdates() {

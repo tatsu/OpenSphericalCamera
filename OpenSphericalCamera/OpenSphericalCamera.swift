@@ -59,6 +59,7 @@ public struct OSCInfo {
     var gyro: Bool = false
     var uptime: Int = 0
     var api: [String] = []
+    var apiLevel: [Int] = [] // v2
 }
 
 public enum OSCCommandState: String {
@@ -120,6 +121,7 @@ public class OpenSphericalCamera: OSCCameraCommand {
                     info.gyro = (jsonDic["gyro"] as? Bool) ?? false
                     info.uptime = (jsonDic["uptime"] as? Int) ?? 0
                     info.api = (jsonDic["api"] as? [String]) ?? []
+                    info.apiLevel = (jsonDic["apiLevel"] as? [Int]) ?? [1] // v2
                 }
             }
 
