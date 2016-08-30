@@ -10,12 +10,18 @@ import XCTest
 @testable import OpenSphericalCamera
 
 class OpenSphericalCameraTests: XCTestCase {
-    var osc: OpenSphericalCamera!
+    var osc = OpenSphericalCamera(ipAddress: "192.168.1.1", httpPort: 80)
 
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        self.osc = OpenSphericalCamera(ipAddress: "192.168.1.1", httpPort: 80)
+
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.setOptions(options: ["clientVersion": 1]) { (data, response, error) in
+            // Don't care response
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
     
     override func tearDown() {

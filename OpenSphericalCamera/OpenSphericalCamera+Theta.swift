@@ -61,11 +61,11 @@ public extension OSCCameraCommand where Self: Theta {
         self.execute("camera._listAll", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getImage(fileUri fileUri: String, _type: ThetaFileType, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func getImage(fileUri fileUri: String, _type: ThetaFileType, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         self.execute("camera.getImage", parameters: ["fileUri": fileUri, "_type": _type.rawValue], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _getVideo(fileUri fileUri: String, _type: ThetaFileType? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func _getVideo(fileUri fileUri: String, _type: ThetaFileType? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         var parameters: [String: AnyObject] = ["fileUri": fileUri]
         if let _type = _type {
             parameters["_type"] = _type.rawValue

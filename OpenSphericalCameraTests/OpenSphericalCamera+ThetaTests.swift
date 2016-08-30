@@ -10,26 +10,26 @@ import XCTest
 @testable import OpenSphericalCamera
 
 class OpenSphericalCamera_ThetaTests: XCTestCase {
-    var osc: ThetaCamera!
-    var model: String!
+    var osc = ThetaCamera()
     var sessionId: String!
 
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        self.osc = ThetaCamera()
-        self.model = osc.info.model
 
-        // startSession
         let semaphore = dispatch_semaphore_create(0)
-        self.osc.startSession { (data, response, error) in
-            if let data = data where error == nil {
-                let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-                if let jsonDic = jsonDic, results = jsonDic["results"] as? NSDictionary {
-                    self.sessionId = results["sessionId"] as? String
+        self.osc.setOptions(options: ["clientVersion": 1]) { (data, response, error) in
+            // Don't care response
+
+            self.osc.startSession { (data, response, error) in
+                if let data = data where error == nil {
+                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                    if let jsonDic = jsonDic, results = jsonDic["results"] as? NSDictionary {
+                        self.sessionId = results["sessionId"] as? String
+                    }
                 }
+                dispatch_semaphore_signal(semaphore)
             }
-            dispatch_semaphore_signal(semaphore)
         }
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
@@ -48,7 +48,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
     }
 
     func testStartAndStopCaptureAndGetVideo() {
-        guard model == "RICOH THETA S" else {
+        guard self.osc.info.model == "RICOH THETA S" else {
             return
         }
 
@@ -123,7 +123,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
     }
 
     func testListAll() {
-        guard model == "RICOH THETA S" else {
+        guard self.osc.info.model == "RICOH THETA S" else {
             return
         }
 
@@ -159,7 +159,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
     }
 
     func testGetImage() {
-        guard model == "RICOH THETA S" else {
+        guard self.osc.info.model == "RICOH THETA S" else {
             return
         }
 
@@ -214,7 +214,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
     // TODO: _getLivePreview wouldn't respond.
     /*
     func testGetLivePreview() {
-        guard model == "RICOH THETA S" else {
+        guard self.osc.info.model == "RICOH THETA S" else {
             return
         }
 
@@ -236,7 +236,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
     */
 
     func testStopSelfTimer() {
-        guard model == "RICOH THETA S" else {
+        guard self.osc.info.model == "RICOH THETA S" else {
             return
         }
 
@@ -303,7 +303,7 @@ class OpenSphericalCamera_ThetaTests: XCTestCase {
 
     /*
     func testFinishWlan() {
-        guard model == "RICOH THETA S" else {
+        guard self.osc.info.model == "RICOH THETA S" else {
             return
         }
 

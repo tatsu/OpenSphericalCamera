@@ -31,16 +31,20 @@ public protocol OSCProtocol: class, OSCBase {
 }
 
 public protocol OSCCameraCommand: class, OSCProtocol {
-    func startSession(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func updateSession(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func closeSession(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
-    func takePicture(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
+    func startSession(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func updateSession(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func closeSession(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Deprecated in v2
+    func takePicture(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Deprecated in v2
+    func takePicture(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
     func listImages(entryCount entryCount: Int, maxSize: Int?, continuationToken: String?, includeThumb: Bool?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func delete(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
-    func getImage(fileUri fileUri: String, maxSize: Int?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func getMetadata(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func delete(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Modified in v2
+    func delete(fileUrls fileUrls: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
+    func getImage(fileUri fileUri: String, maxSize: Int?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func getMetadata(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func getOptions(optionNames optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func setOptions(options options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
 }
 
 public struct OSCEndpoints {
@@ -161,6 +165,19 @@ public extension OSCCameraCommand {
                 break
             }
         }
+    }
+
+    // MARK: - GET Method (Added in v2)
+
+    public func get(urlString: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.cancel()
+
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        self.task = self.urlSession!.dataTaskWithRequest(request) { (data, response, error) in
+            completionHandler(data, response, error)
+        }
+        self.task!.resume()
     }
 
     // MARK: - OSCProtocol Methods
@@ -304,20 +321,24 @@ public extension OSCCameraCommand {
 
     // MARK: - OSCCameraCommand Methods
 
-    public func startSession(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func startSession(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         self.execute("camera.startSession", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func updateSession(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func updateSession(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         self.execute("camera.updateSession", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func closeSession(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func closeSession(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera.closeSession", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func takePicture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func takePicture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera.takePicture", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func takePicture(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera.takePicture", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
     public func listImages(entryCount entryCount: Int, maxSize: Int? = nil, continuationToken: String? = nil, includeThumb: Bool? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
@@ -334,12 +355,17 @@ public extension OSCCameraCommand {
         self.execute("camera.listImages", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func delete(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func delete(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Modified in v2
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
         self.execute("camera.delete", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getImage(fileUri fileUri: String, maxSize: Int? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func delete(fileUrls fileUrls: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        let parameters: [String: AnyObject] = ["fileUrls": fileUrls]
+        self.execute("camera.delete", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func getImage(fileUri fileUri: String, maxSize: Int? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         var parameters: [String: AnyObject] = ["fileUri": fileUri]
         if let maxSize = maxSize {
             parameters["maxSize"] = maxSize
@@ -347,17 +373,25 @@ public extension OSCCameraCommand {
         self.execute("camera.getImage", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getMetadata(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func getMetadata(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
         self.execute("camera.getMetadata", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         self.execute("camera.getOptions", parameters: ["sessionId": sessionId, "optionNames": optionNames], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func getOptions(optionNames optionNames: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.getOptions", parameters: ["optionNames": optionNames], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         self.execute("camera.setOptions", parameters: ["sessionId": sessionId, "options": options], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func setOptions(options options: [String: AnyObject], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.setOptions", parameters: ["options": options], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
 }
