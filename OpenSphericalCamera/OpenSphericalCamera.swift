@@ -83,10 +83,11 @@ public enum OSCErrorCode: String {
     case DisabledCommand = "disabledCommand" // 403 Command cannot be executed due to the camera status
     case MissingParameter = "missingParameter" // 400 Insufficient required parameters to issue the command
     case InvalidParameterName = "invalidParameterName" // 400 Parameter name or option name is invalid
-    case InvalidSessionId = "invalidSessionId" // 403 sessionID when command was issued is invalid
     case InvalidParameterValue = "invalidParameterValue" // 400 Parameter value when command was issued is invalid
+    case InvalidSessionId = "invalidSessionId" // 403 sessionID when command was issued is invalid (Deprecated in v2)
+    case TooManyParameters = "tooManyParameters" // 403 Number of parameters exceeds limit (Added in v2)
     case CorruptedFile = "corruptedFile" // 403 Process request for corrupted file
-    case CameraInExclusiveUse = "cameraInExclusiveUse" // 400 Session start not possible when camera is in exclusive use
+    case CameraInExclusiveUse = "cameraInExclusiveUse" // 400 Session start not possible when camera is in exclusive use (Deprecated in v2)
     case PowerOffSequenceRunning = "powerOffSequenceRunning" // 403 Process request when power supply is off
     case InvalidFileFormat = "invalidFileFormat" // 403 Invalid file format specified
     case ServiceUnavailable = "serviceUnavailable" // 503 Processing requests cannot be received temporarily
