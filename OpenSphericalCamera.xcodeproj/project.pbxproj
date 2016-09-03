@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1738A4061D75803A00359B7A /* OpenSphericalCameraTestsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1738A4051D75803A00359B7A /* OpenSphericalCameraTestsV2.swift */; };
 		17872B701D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17872B6F1D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift */; };
+		17B74B011D7A9DAB00395B1A /* LivePreviewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B74B001D7A9DAB00395B1A /* LivePreviewDelegate.swift */; };
 		17CA22DC1D01197300BD2C82 /* OpenSphericalCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 17CA22DB1D01197300BD2C82 /* OpenSphericalCamera.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		17CA22E31D01197300BD2C82 /* OpenSphericalCamera.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17CA22D81D01197300BD2C82 /* OpenSphericalCamera.framework */; };
 		17CA22E81D01197300BD2C82 /* OpenSphericalCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17CA22E71D01197300BD2C82 /* OpenSphericalCameraTests.swift */; };
@@ -29,6 +30,7 @@
 /* Begin PBXFileReference section */
 		1738A4051D75803A00359B7A /* OpenSphericalCameraTestsV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenSphericalCameraTestsV2.swift; sourceTree = "<group>"; };
 		17872B6F1D04183D008440B1 /* OpenSphericalCamera+ThetaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OpenSphericalCamera+ThetaTests.swift"; sourceTree = "<group>"; };
+		17B74B001D7A9DAB00395B1A /* LivePreviewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LivePreviewDelegate.swift; sourceTree = "<group>"; };
 		17CA22D81D01197300BD2C82 /* OpenSphericalCamera.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenSphericalCamera.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		17CA22DB1D01197300BD2C82 /* OpenSphericalCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenSphericalCamera.h; sourceTree = "<group>"; };
 		17CA22DD1D01197300BD2C82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 				17CA233B1D011F2B00BD2C82 /* OpenSphericalCamera+Theta.swift */,
 				17CA22DB1D01197300BD2C82 /* OpenSphericalCamera.h */,
 				17CA22DD1D01197300BD2C82 /* Info.plist */,
+				17B74B001D7A9DAB00395B1A /* LivePreviewDelegate.swift */,
 			);
 			path = OpenSphericalCamera;
 			sourceTree = "<group>";
@@ -206,6 +209,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17B74B011D7A9DAB00395B1A /* LivePreviewDelegate.swift in Sources */,
 				17CA233C1D011F2B00BD2C82 /* OpenSphericalCamera.swift in Sources */,
 				17CA233D1D011F2B00BD2C82 /* OpenSphericalCamera+Theta.swift in Sources */,
 			);

@@ -286,4 +286,24 @@ class OpenSphericalCameraTestsV2: XCTestCase {
         }
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
+
+    // TODO: getLivePreview wouldn't respond.
+    /*
+    func testGetLivePreview() {
+        var count = 0
+
+        // getLivePreview
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.getLivePreview { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            XCTAssertNotNil(UIImage(data: data!))
+            count += 1
+            if count >= 10 {
+                self.osc.cancel()
+                dispatch_semaphore_signal(semaphore)
+            }
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+    */
 }

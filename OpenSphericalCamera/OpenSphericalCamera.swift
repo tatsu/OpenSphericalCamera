@@ -44,6 +44,7 @@ public protocol OSCCameraCommand: class, OSCProtocol {
     func delete(fileUrls fileUrls: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
     func getImage(fileUri fileUri: String, maxSize: Int?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
     func getMetadata(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func getLivePreview(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Added in v2
     func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
     func getOptions(optionNames optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
     func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
@@ -404,6 +405,10 @@ public extension OSCCameraCommand {
     public func getMetadata(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
         self.execute("camera.getMetadata", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func getLivePreview(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Added in v2
+        self.execute("camera.getLivePreview", parameters: nil, delegate: LivePreviewDelegate(completionHandler: completionHandler))
     }
 
     public func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
