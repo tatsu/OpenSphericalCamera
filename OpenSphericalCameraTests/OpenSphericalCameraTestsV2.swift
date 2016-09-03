@@ -306,4 +306,26 @@ class OpenSphericalCameraTestsV2: XCTestCase {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
     */
+
+    /*
+    func testReset() {
+
+        // reset
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.reset { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.reset")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+    */
 }

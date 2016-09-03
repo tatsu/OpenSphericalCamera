@@ -47,6 +47,7 @@ public protocol OSCCameraCommand: class, OSCProtocol {
     func getLivePreview(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Added in v2
     func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
     func getOptions(optionNames optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func reset(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Added in v2
     func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
     func setOptions(options options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
     func processPicture(previewFileUrls previewFileUrls: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Added in v2
@@ -418,6 +419,10 @@ public extension OSCCameraCommand {
 
     public func getOptions(optionNames optionNames: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         self.execute("camera.getOptions", parameters: ["optionNames": optionNames], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func reset(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Added in v2
+        self.execute("camera.reset", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
     public func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
