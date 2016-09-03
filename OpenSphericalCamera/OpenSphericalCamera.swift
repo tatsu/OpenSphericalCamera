@@ -49,6 +49,7 @@ public protocol OSCCameraCommand: class, OSCProtocol {
     func getOptions(optionNames optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
     func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
     func setOptions(options options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func processPicture(previewFileUrls previewFileUrls: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Added in v2
 }
 
 public struct OSCEndpoints {
@@ -425,6 +426,11 @@ public extension OSCCameraCommand {
 
     public func setOptions(options options: [String: AnyObject], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         self.execute("camera.setOptions", parameters: ["options": options], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func processPicture(previewFileUrls previewFileUrls: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Added in v2
+        let parameters: [String: AnyObject] = ["previewFileUrls": previewFileUrls]
+        self.execute("camera.processPicture", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
 }
