@@ -150,6 +150,97 @@ class OpenSphericalCameraTestsV2: XCTestCase {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
 
+    func testListFiles() {
+
+        // listFiles
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.listFiles(fileType: .Image, startPosition: 1, entryCount: 5, maxThumbSize: 0) { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.listFiles")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+
+            let results = jsonDic!["results"] as? NSDictionary
+            XCTAssert(results != nil && results!.count > 0)
+
+            let entries = results!["entries"] as? [NSDictionary]
+            XCTAssert(entries != nil && entries!.count > 0)
+
+            let uri = entries![0]["fileUrl"] as? String
+            XCTAssert(uri != nil && !uri!.isEmpty)
+
+            let totalEntries = results!["totalEntries"] as? Int
+            XCTAssert(totalEntries != nil)
+
+            dispatch_semaphore_signal(semaphore)
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+
+    func testStartAndStopCaptureAndGetVideo() {
+
+        // setOptions
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.setOptions(options: ["captureMode": "video"]) { (data, response, error) in
+            XCTAssert(data != nil && data!.length > 0)
+            let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+            let name = jsonDic!["name"] as? String
+            XCTAssert(name != nil && name! == "camera.setOptions")
+
+            let state = jsonDic!["state"] as? String
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+
+            // startCapture
+            self.osc.startCapture { (data, response, error) in
+                XCTAssert(data != nil && data!.length > 0)
+                let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                let name = jsonDic!["name"] as? String
+                XCTAssert(name != nil && name! == "camera.startCapture")
+
+                let state = jsonDic!["state"] as? String
+                XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+
+                sleep(1)
+
+                // stopCapture
+                self.osc.stopCapture { (data, response, error) in
+                    XCTAssert(data != nil && data!.length > 0)
+                    let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                    XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+
+                    let name = jsonDic!["name"] as? String
+                    XCTAssert(name != nil && name! == "camera.stopCapture")
+
+                    let state = jsonDic!["state"] as? String
+                    XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+
+                    let results = jsonDic!["results"] as? NSDictionary
+                    XCTAssert(results != nil && results!.count > 0)
+
+                    let fileUrls = results!["fileUrls"] as? [String]
+                    XCTAssertNotNil(fileUrls)
+
+                    // GET file
+                    self.osc.get(fileUrls![0]){ (data, response, error) in
+                        XCTAssert(data != nil && data!.length > 0)
+
+                        dispatch_semaphore_signal(semaphore)
+                    }
+                }
+            }
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    }
+
     func testGetAndSetOptions() {
 
         // getOptions

@@ -36,7 +36,10 @@ public protocol OSCCameraCommand: class, OSCProtocol {
     func closeSession(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Deprecated in v2
     func takePicture(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Deprecated in v2
     func takePicture(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
-    func listImages(entryCount entryCount: Int, maxSize: Int?, continuationToken: String?, includeThumb: Bool?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func startCapture(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Added in v2
+    func stopCapture(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Added in v2
+    func listImages(entryCount entryCount: Int, maxSize: Int?, continuationToken: String?, includeThumb: Bool?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
+    func listFiles(fileType fileType: FileType, startPosition: Int?, entryCount: Int, maxThumbSize: Int?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Added in v2
     func delete(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) // Modified in v2
     func delete(fileUrls fileUrls: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
     func getImage(fileUri fileUri: String, maxSize: Int?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) // Deprecated in v2
@@ -86,6 +89,12 @@ public enum OSCErrorCode: String {
     case ServiceUnavailable = "serviceUnavailable" // 503 Processing requests cannot be received temporarily
     case CanceledShooting = "canceledShooting" // 403 Shooting request cancellation of the self-timer. Returned in Commands/Status of camera.takePicture (Firmware version 01.42 or above)
     case Unexpected = "unexpected" // 503 Other errors
+}
+
+public enum FileType: String {
+    case All = "all"
+    case Image = "image"
+    case Video = "video"
 }
 
 public class OpenSphericalCamera: OSCCameraCommand {
@@ -341,7 +350,15 @@ public extension OSCCameraCommand {
         self.execute("camera.takePicture", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func listImages(entryCount entryCount: Int, maxSize: Int? = nil, continuationToken: String? = nil, includeThumb: Bool? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func startCapture(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Added in v2
+        self.execute("camera.startCapture", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func stopCapture(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Added in v2
+        self.execute("camera.stopCapture", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func listImages(entryCount entryCount: Int, maxSize: Int? = nil, continuationToken: String? = nil, includeThumb: Bool? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         var parameters: [String: AnyObject] = ["entryCount": entryCount]
         if let maxSize = maxSize {
             parameters["maxSize"] = maxSize
@@ -353,6 +370,17 @@ public extension OSCCameraCommand {
             parameters["includeThumb"] = includeThumb
         }
         self.execute("camera.listImages", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    func listFiles(fileType fileType: FileType, startPosition: Int? = nil, entryCount: Int, maxThumbSize: Int? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Added in v2
+        var parameters: [String: AnyObject] = ["fileType": fileType.rawValue, "entryCount": entryCount]
+        if let startPosition = startPosition {
+            parameters["startPosition"] = startPosition
+        }
+        if let maxThumbSize = maxThumbSize {
+            parameters["maxThumbSize"] = maxThumbSize
+        }
+        self.execute("camera.listFiles", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
     public func delete(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Modified in v2

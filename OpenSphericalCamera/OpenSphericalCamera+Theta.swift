@@ -39,15 +39,15 @@ public extension OSCCameraCommand where Self: Theta {
         self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _startCapture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func _startCapture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera._startCapture", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _stopCapture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func _stopCapture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera._stopCapture", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _listAll(entryCount entryCount: Int, continuationToken: String? = nil, detail: Bool? = nil, sort: ThetaListSort? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func _listAll(entryCount entryCount: Int, continuationToken: String? = nil, detail: Bool? = nil, sort: ThetaListSort? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
         var parameters: [String: AnyObject] = ["entryCount": entryCount]
         if let continuationToken = continuationToken {
             parameters["continuationToken"] = continuationToken
