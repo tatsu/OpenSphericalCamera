@@ -32,8 +32,12 @@ public enum ThetaFileType: String {
 
 public extension OSCCameraCommand where Self: Theta {
 
-    public func _finishWlan(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func _finishWlan(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    public func _finishWlan(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
+        self.execute("camera._finishWlan", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
     public func _startCapture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
@@ -56,6 +60,23 @@ public extension OSCCameraCommand where Self: Theta {
             parameters["sort"] = sort.rawValue
         }
         self.execute("camera._listAll", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
+    }
+
+    func listFiles(fileType fileType: FileType, startPosition: Int? = nil, entryCount: Int, maxThumbSize: Int? = nil, _detail: Bool? = nil, _sort: ThetaListSort? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Added in v2
+        var parameters: [String: AnyObject] = ["fileType": fileType.rawValue, "entryCount": entryCount]
+        if let startPosition = startPosition {
+            parameters["startPosition"] = startPosition
+        }
+        if let maxThumbSize = maxThumbSize {
+            parameters["maxThumbSize"] = maxThumbSize
+        }
+        if let _detail = _detail {
+            parameters["_detail"] = _detail
+        }
+        if let _sort = _sort {
+            parameters["_sort"] = _sort.rawValue
+        }
+        self.execute("camera.listFiles", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
     public func getImage(fileUri fileUri: String, _type: ThetaFileType, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
