@@ -49,7 +49,7 @@ $ brew install carthage
 To integrate OpenSphericalCamera into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "tatsu/OpenSphericalCamera" ~> 2.0.0.beta.1
+github "tatsu/OpenSphericalCamera" ~> 2.0.0
 ```
 
 Run `carthage update` to build the framework and drag the built `OpenSphericalCamera.framework` into your Xcode project.
