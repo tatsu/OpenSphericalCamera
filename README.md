@@ -5,6 +5,7 @@ A Swift OpenSphericalCamera API library with Ricoh Theta S extension
 
 * Swift 2.2+
 * Xcode 7.3+
+* OpenSphericalCamera API level 2 and/or 1 (RICOH THETA API v2.1 and/or v2.0)
 
 ## Installation
 
@@ -24,7 +25,7 @@ platform :ios, '9.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-  pod 'OpenSphericalCamera', '~> 1.0.1'
+  pod 'OpenSphericalCamera', '~> 2.0.0.beta.1'
 end
 ```
 
@@ -48,7 +49,7 @@ $ brew install carthage
 To integrate OpenSphericalCamera into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "tatsu/OpenSphericalCamera" ~> 1.0.1
+github "tatsu/OpenSphericalCamera" ~> 2.0.0.beta.1
 ```
 
 Run `carthage update` to build the framework and drag the built `OpenSphericalCamera.framework` into your Xcode project.
@@ -58,31 +59,35 @@ Run `carthage update` to build the framework and drag the built `OpenSphericalCa
 ```swift
 import OpenSphericalCamera
 
-// Construct osc generic camera
+// Construct OSC generic camera
 let osc = OpenSphericalCamera(ipAddress: "192.168.1.1", httpPort: 80)
 // Or, Ricoh THETA S camera
 let osc = ThetaCamera()
 
-// camera.startSession
+// Set OSC API level 2 (for Ricoh THETA S)
 self.osc.startSession { (data, response, error) in
     if let data = data where error == nil {
-        let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-        if let jsonDic = jsonDic, results = jsonDic["results"] as? NSDictionary {
-            self.sessionId = results["sessionId"] as? String
+        if let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary, results = jsonDic["results"] as? NSDictionary, sessionId = results["sessionId"] as? String {
+            self.osc.setOptions(sessionId: sessionId, options: ["clientVersion": 2]) { (data, response, error) in
+                self.osc.closeSession(sessionId: sessionId)
+            }
+        } else {
+            // Assume clientVersion is equal or later than 2
         }
     }
 }
 
-// camera.takePicture
-self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
+// Take picture
+self.osc.takePicture { (data, response, error) in
     if let data = data where error == nil {
         let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
         if let jsonDic = jsonDic, rawState = jsonDic["state"] as? String, state = OSCCommandState(rawValue: rawState) {
             switch state {
             case .InProgress:
                 /*
-                 * Set execute commands' progressNeeded parameter true explicitly, except for getLivePreview,
-                 * if you want this handler to be called back "inProgress". In any case, they are waiting for
+                 * Set execute commands' progressNeeded parameter true explicitly,
+                 * except for getLivePreview, if you want this handler to be
+                 * called back "inProgress". In any case, they are waiting for
                  * "done" or "error" internally.
                  */
             case .Done:
@@ -99,9 +104,6 @@ self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
         }
     }
 }
-
-// camera.closeSession
-self.osc.closeSession(sessionId: self.sessionId)
 ```
 
 ## Sample App
@@ -109,7 +111,7 @@ self.osc.closeSession(sessionId: self.sessionId)
 
 ## References
 * [Open Spherical Camera API](https://developers.google.com/streetview/open-spherical-camera/)
-* [Ricoh THETA API v2](https://developers.theta360.com/en/docs/v2/api_reference/)
+* [Ricoh THETA API v2.1](https://developers.theta360.com/en/docs/v2.1/api_reference/)
 
 ## License
 
