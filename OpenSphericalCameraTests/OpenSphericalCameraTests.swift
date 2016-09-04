@@ -192,6 +192,115 @@ class OpenSphericalCameraTests: XCTestCase {
         closeSession(sessionId)
     }
 
+    func testProgressingTakePictureAndGetImageAndDelete() {
+
+        // startSession
+        let sessionId = startSession()
+
+        // setOptions
+        let semaphore = dispatch_semaphore_create(0)
+        self.osc.setOptions(sessionId: sessionId, options: ["captureMode": "image"], progressNeeded: true) { (data, response, error) in
+            guard let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary, name = jsonDic["name"] as? String, state = jsonDic["state"] as? String, commandState = OSCCommandState(rawValue: state) else {
+                print(data)
+                assertionFailure()
+                return
+            }
+
+            print(name)
+
+            switch commandState {
+            case .InProgress:
+                print("Progressing")
+                return
+            case .Error:
+                print(jsonDic["error"])
+                assertionFailure()
+            case .Done:
+                break;
+            }
+
+            // takePicture
+            self.osc.takePicture(sessionId: sessionId, progressNeeded: true) { (data, response, error) in
+                guard let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary, name = jsonDic["name"] as? String, state = jsonDic["state"] as? String, commandState = OSCCommandState(rawValue: state) else {
+                    print(data)
+                    assertionFailure()
+                    return
+                }
+
+                print(name)
+
+                switch commandState {
+                case .InProgress:
+                    let progress = jsonDic["progress"] as? NSDictionary
+                    XCTAssertNotNil(progress)
+                    let completion = progress!["completion"] as? NSNumber
+                    XCTAssertNotNil(completion)
+                    print("inProgress... completion: \(Float(completion!))")
+                    return
+                case .Error:
+                    print(jsonDic["error"])
+                    assertionFailure()
+                case .Done:
+                    break;
+                }
+
+                guard let results = jsonDic["results"] as? NSDictionary, fileUri = results["fileUri"] as? String else {
+                    print(data)
+                    assertionFailure()
+                    return
+                }
+
+                // getImage
+                self.osc.getImage(fileUri: fileUri, progressNeeded: true) { (data, response, error) in
+                    if let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary, name = jsonDic["name"] as? String, state = jsonDic["state"] as? String, commandState = OSCCommandState(rawValue: state) {
+                        print(name)
+
+                        switch commandState {
+                        case .InProgress:
+                            print("Progressing")
+                            return
+                        case .Error:
+                            print(jsonDic["error"])
+                            assertionFailure()
+                        case .Done:
+                            assertionFailure()
+                            break;
+                        }
+                        return
+                    }
+
+                    // delete
+                    self.osc.delete(fileUri: fileUri, progressNeeded: true) { (data, response, error) in
+                        guard let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary, name = jsonDic["name"] as? String, state = jsonDic["state"] as? String, commandState = OSCCommandState(rawValue: state) else {
+                            print(data)
+                            assertionFailure()
+                            return
+                        }
+
+                        print(name)
+
+                        switch commandState {
+                        case .InProgress:
+                            print("Progressing")
+                            return
+                        case .Error:
+                            print(jsonDic["error"])
+                            assertionFailure()
+                        case .Done:
+                            break;
+                        }
+
+                        dispatch_semaphore_signal(semaphore)
+                    }
+                }
+            }
+        }
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+        // closeSession
+        closeSession(sessionId)
+    }
+
     func testListImagesAndGetMetadata() {
 
         // startSession

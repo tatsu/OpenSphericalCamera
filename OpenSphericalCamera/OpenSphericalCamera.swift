@@ -26,21 +26,21 @@ public protocol OSCProtocol: class, OSCBase {
     func checkForUpdates(stateFingerprint stateFingerprint: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
     func execute(name: String, parameters: [String: AnyObject]?, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
     func execute(name: String, parameters: [String: AnyObject]?, delegate: NSURLSessionDelegate)
-    func getWaitDoneHandler(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) -> (NSData?, NSURLResponse?, NSError?) -> Void
+    func getWaitDoneHandler(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?) -> (NSData?, NSURLResponse?, NSError?) -> Void
     func status(id id: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
 }
 
 public protocol OSCCameraCommand: class, OSCProtocol {
-    func startSession(completionHandler completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func updateSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func closeSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
-    func takePicture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
-    func listImages(entryCount entryCount: Int, maxSize: Int?, continuationToken: String?, includeThumb: Bool?, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func delete(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
-    func getImage(fileUri fileUri: String, maxSize: Int?, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func getMetadata(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func getOptions(sessionId sessionId: String, optionNames: [String], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
-    func setOptions(sessionId sessionId: String, options: [String: AnyObject], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func startSession(progressNeeded progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func updateSession(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func closeSession(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
+    func takePicture(sessionId sessionId: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
+    func listImages(entryCount entryCount: Int, maxSize: Int?, continuationToken: String?, includeThumb: Bool?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func delete(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)?)
+    func getImage(fileUri fileUri: String, maxSize: Int?, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func getMetadata(fileUri fileUri: String, progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
+    func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void))
 }
 
 public struct OSCEndpoints {
@@ -265,7 +265,7 @@ public extension OSCCameraCommand {
         self.task!.resume()
     }
 
-    public func getWaitDoneHandler(completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) -> (NSData?, NSURLResponse?, NSError?) -> Void {
+    public func getWaitDoneHandler(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) -> (NSData?, NSURLResponse?, NSError?) -> Void {
         var waitDoneHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)!
         waitDoneHandler = { (data, response, error) in
             guard let d = data where error == nil else {
@@ -281,6 +281,9 @@ public extension OSCCameraCommand {
 
             switch state {
             case .InProgress:
+                if progressNeeded {
+                    completionHandler?(data, response, error)
+                }
                 if let id = dic["id"] as? String {
                     sleep(1)
                     self.status(id: id, completionHandler: waitDoneHandler)
@@ -299,23 +302,23 @@ public extension OSCCameraCommand {
 
     // MARK: - OSCCameraCommand Methods
 
-    public func startSession(completionHandler completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.startSession", parameters: nil, completionHandler: self.getWaitDoneHandler(completionHandler))
+    public func startSession(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.startSession", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func updateSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.updateSession", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(completionHandler))
+    public func updateSession(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.updateSession", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func closeSession(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-        self.execute("camera.closeSession", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(completionHandler))
+    public func closeSession(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera.closeSession", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func takePicture(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
-        self.execute("camera.takePicture", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(completionHandler))
+    public func takePicture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+        self.execute("camera.takePicture", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func listImages(entryCount entryCount: Int, maxSize: Int? = nil, continuationToken: String? = nil, includeThumb: Bool? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func listImages(entryCount entryCount: Int, maxSize: Int? = nil, continuationToken: String? = nil, includeThumb: Bool? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         var parameters: [String: AnyObject] = ["entryCount": entryCount]
         if let maxSize = maxSize {
             parameters["maxSize"] = maxSize
@@ -326,33 +329,33 @@ public extension OSCCameraCommand {
         if let includeThumb = includeThumb {
             parameters["includeThumb"] = includeThumb
         }
-        self.execute("camera.listImages", parameters: parameters, completionHandler: self.getWaitDoneHandler(completionHandler))
+        self.execute("camera.listImages", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func delete(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func delete(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
-        self.execute("camera.delete", parameters: parameters, completionHandler: self.getWaitDoneHandler(completionHandler))
+        self.execute("camera.delete", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getImage(fileUri fileUri: String, maxSize: Int? = nil, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func getImage(fileUri fileUri: String, maxSize: Int? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         var parameters: [String: AnyObject] = ["fileUri": fileUri]
         if let maxSize = maxSize {
             parameters["maxSize"] = maxSize
         }
-        self.execute("camera.getImage", parameters: parameters, completionHandler: completionHandler)
+        self.execute("camera.getImage", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getMetadata(fileUri fileUri: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+    public func getMetadata(fileUri fileUri: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
         let parameters: [String: AnyObject] = ["fileUri": fileUri]
-        self.execute("camera.getMetadata", parameters: parameters, completionHandler: self.getWaitDoneHandler(completionHandler))
+        self.execute("camera.getMetadata", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getOptions(sessionId sessionId: String, optionNames: [String], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.getOptions", parameters: ["sessionId": sessionId, "optionNames": optionNames], completionHandler: self.getWaitDoneHandler(completionHandler))
+    public func getOptions(sessionId sessionId: String, optionNames: [String], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.getOptions", parameters: ["sessionId": sessionId, "optionNames": optionNames], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func setOptions(sessionId sessionId: String, options: [String: AnyObject], completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
-        self.execute("camera.setOptions", parameters: ["sessionId": sessionId, "options": options], completionHandler: self.getWaitDoneHandler(completionHandler))
+    public func setOptions(sessionId sessionId: String, options: [String: AnyObject], progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) {
+        self.execute("camera.setOptions", parameters: ["sessionId": sessionId, "options": options], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
 }
