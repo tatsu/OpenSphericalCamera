@@ -24,7 +24,7 @@ platform :ios, '9.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-  pod 'OpenSphericalCamera', '~> 0.1.0'
+  pod 'OpenSphericalCamera', '~> 1.0.1'
 end
 ```
 
@@ -48,7 +48,7 @@ $ brew install carthage
 To integrate OpenSphericalCamera into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "tatsu/OpenSphericalCamera" ~> 0.2.1
+github "tatsu/OpenSphericalCamera" ~> 1.0.1
 ```
 
 Run `carthage update` to build the framework and drag the built `OpenSphericalCamera.framework` into your Xcode project.
@@ -80,8 +80,11 @@ self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
         if let jsonDic = jsonDic, rawState = jsonDic["state"] as? String, state = OSCCommandState(rawValue: rawState) {
             switch state {
             case .InProgress:
-                // Not reached here since the library is waiting for "done" or "error" internally.
-                assertionFailure()
+                /*
+                 * Set execute commands' progressNeeded parameter true explicitly, except for getLivePreview,
+                 * if you want this handler to be called back "inProgress". In any case, they are waiting for
+                 * "done" or "error" internally.
+                 */
             case .Done:
                 if let results = jsonDic["results"] as? NSDictionary, fileUri = results["fileUri"] as? String {
                     self.osc.getImage(fileUri: fileUri, _type: .Thumb) { (data, response, error) in
