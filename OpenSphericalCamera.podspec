@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "OpenSphericalCamera"
-  s.version      = "1.0.0"
+  s.version      = "2.0.0.beta.1"
   s.summary      = "OpenSphericalCamera API Client in Swift"
   s.description  = <<-DESC
 A Swift OpenSphericalCamera API library with Ricoh Theta S extension
