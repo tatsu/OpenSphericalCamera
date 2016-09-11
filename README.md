@@ -91,8 +91,8 @@ self.osc.takePicture { (data, response, error) in
                  * "done" or "error" internally.
                  */
             case .Done:
-                if let results = jsonDic["results"] as? NSDictionary, fileUri = results["fileUri"] as? String {
-                    self.osc.getImage(fileUri: fileUri, _type: .Thumb) { (data, response, error) in
+                if let results = jsonDic["results"] as? NSDictionary, fileUrl = results["fileUrl"] as? String {
+                    self.osc.get(fileUrl) { (data, response, error) in
                         dispatch_async(dispatch_get_main_queue()) {
                             self.previewView.image = UIImage(data: data!)
                         }
