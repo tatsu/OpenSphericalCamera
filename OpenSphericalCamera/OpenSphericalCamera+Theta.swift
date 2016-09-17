@@ -12,7 +12,7 @@ public protocol Theta {
 
 }
 
-public class ThetaCamera: OpenSphericalCamera, Theta {
+open class ThetaCamera: OpenSphericalCamera, Theta {
 
     convenience public init() {
         self.init(ipAddress: "192.168.1.1", httpPort: 80)
@@ -32,70 +32,70 @@ public enum ThetaFileType: String {
 
 public extension OSCCameraCommand where Self: Theta {
 
-    public func _finishWlan(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
+    public func _finishWlan(sessionId: String, progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera._finishWlan", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _finishWlan(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
+    public func _finishWlan(progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera._finishWlan", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _startCapture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
+    public func _startCapture(sessionId: String, progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera._startCapture", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _stopCapture(sessionId sessionId: String, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
+    public func _stopCapture(sessionId: String, progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)? = nil) { // Deprecated in v2
         self.execute("camera._stopCapture", parameters: ["sessionId": sessionId], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _listAll(entryCount entryCount: Int, continuationToken: String? = nil, detail: Bool? = nil, sort: ThetaListSort? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
-        var parameters: [String: AnyObject] = ["entryCount": entryCount]
+    public func _listAll(entryCount: Int, continuationToken: String? = nil, detail: Bool? = nil, sort: ThetaListSort? = nil, progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)) { // Deprecated in v2
+        var parameters: [String: AnyObject] = ["entryCount": entryCount as AnyObject]
         if let continuationToken = continuationToken {
-            parameters["continuationToken"] = continuationToken
+            parameters["continuationToken"] = continuationToken as AnyObject?
         }
         if let detail = detail {
-            parameters["detail"] = detail
+            parameters["detail"] = detail as AnyObject?
         }
         if let sort = sort {
-            parameters["sort"] = sort.rawValue
+            parameters["sort"] = sort.rawValue as AnyObject?
         }
         self.execute("camera._listAll", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    func listFiles(fileType fileType: FileType, startPosition: Int? = nil, entryCount: Int, maxThumbSize: Int? = nil, _detail: Bool? = nil, _sort: ThetaListSort? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Added in v2
-        var parameters: [String: AnyObject] = ["fileType": fileType.rawValue, "entryCount": entryCount]
+    func listFiles(fileType: FileType, startPosition: Int? = nil, entryCount: Int, maxThumbSize: Int? = nil, _detail: Bool? = nil, _sort: ThetaListSort? = nil, progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)) { // Added in v2
+        var parameters: [String: AnyObject] = ["fileType": fileType.rawValue as AnyObject, "entryCount": entryCount as AnyObject]
         if let startPosition = startPosition {
-            parameters["startPosition"] = startPosition
+            parameters["startPosition"] = startPosition as AnyObject?
         }
         if let maxThumbSize = maxThumbSize {
-            parameters["maxThumbSize"] = maxThumbSize
+            parameters["maxThumbSize"] = maxThumbSize as AnyObject?
         }
         if let _detail = _detail {
-            parameters["_detail"] = _detail
+            parameters["_detail"] = _detail as AnyObject?
         }
         if let _sort = _sort {
-            parameters["_sort"] = _sort.rawValue
+            parameters["_sort"] = _sort.rawValue as AnyObject?
         }
         self.execute("camera.listFiles", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func getImage(fileUri fileUri: String, _type: ThetaFileType, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
+    public func getImage(fileUri: String, _type: ThetaFileType, progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)) { // Deprecated in v2
         self.execute("camera.getImage", parameters: ["fileUri": fileUri, "_type": _type.rawValue], completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _getVideo(fileUri fileUri: String, _type: ThetaFileType? = nil, progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
-        var parameters: [String: AnyObject] = ["fileUri": fileUri]
+    public func _getVideo(fileUri: String, _type: ThetaFileType? = nil, progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)) { // Deprecated in v2
+        var parameters: [String: AnyObject] = ["fileUri": fileUri as AnyObject]
         if let _type = _type {
-            parameters["_type"] = _type.rawValue
+            parameters["_type"] = _type.rawValue as AnyObject?
         }
         self.execute("camera._getVideo", parameters: parameters, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 
-    public func _getLivePreview(sessionId sessionId: String, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)) { // Deprecated in v2
+    public func _getLivePreview(sessionId: String, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)) { // Deprecated in v2
         self.execute("camera._getLivePreview", parameters: ["sessionId": sessionId], delegate: LivePreviewDelegate(completionHandler: completionHandler))
     }
 
-    public func _stopSelfTimer(progressNeeded progressNeeded: Bool = false, completionHandler: ((NSData?, NSURLResponse?, NSError?) -> Void)? = nil) {
+    public func _stopSelfTimer(progressNeeded: Bool = false, completionHandler: ((Data?, URLResponse?, NSError?) -> Void)? = nil) {
         self.execute("camera._stopSelfTimer", parameters: nil, completionHandler: self.getWaitDoneHandler(progressNeeded: progressNeeded, completionHandler: completionHandler))
     }
 }
