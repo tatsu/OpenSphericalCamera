@@ -3,9 +3,12 @@ A Swift OpenSphericalCamera API library with Ricoh Theta S extension
 
 ## Requirements
 
-* Swift 2.2+
-* Xcode 7.3+
-* OpenSphericalCamera API level 2 and/or 1 (RICOH THETA API v2.1 and/or v2.0)
+| branch | Swift(Xcode) | OSC API Level | THETA API Ver. | Release |
+|--------|-------------:|--------------:|---------------:|--------:|
+|master|3 (8.0+)|2 & 1|2.1 & 2.0|-|
+|osc-v2-swift2.3|2.3 (8.0+)|2 & 1|2.1 & 2.0|2.1.0|
+|osc-v2-swift2.2|2.2+ (7.3+)|2 & 1|2.1 & 2.0|2.0.0|
+|osc-v1-swift2.2|2.2+ (7.3+)|1|2.0|1.0.1|
 
 ## Installation
 
