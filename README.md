@@ -5,7 +5,7 @@ A Swift OpenSphericalCamera API library with Ricoh Theta S extension
 
 | branch | Swift(Xcode) | OSC API Level | THETA API Ver. | Release |
 |--------|-------------:|--------------:|---------------:|--------:|
-|master|3 (8.0+)|2 & 1|2.1 & 2.0|-|
+|master|3 (8.0+)|2 & 1|2.1 & 2.0|3.0.0|
 |osc-v2-swift2.3|2.3 (8.0+)|2 & 1|2.1 & 2.0|2.1.0|
 |osc-v2-swift2.2|2.2+ (7.3+)|2 & 1|2.1 & 2.0|2.0.0|
 |osc-v1-swift2.2|2.2+ (7.3+)|1|2.0|1.0.1|
@@ -28,7 +28,7 @@ platform :ios, '9.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-  pod 'OpenSphericalCamera', '~> 2.0.0'
+  pod 'OpenSphericalCamera', '~> 3.0.0'
 end
 ```
 
@@ -52,7 +52,7 @@ $ brew install carthage
 To integrate OpenSphericalCamera into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "tatsu/OpenSphericalCamera" ~> 2.0.0
+github "tatsu/OpenSphericalCamera" ~> 3.0.0
 ```
 
 Run `carthage update` to build the framework and drag the built `OpenSphericalCamera.framework` into your Xcode project.
@@ -69,8 +69,8 @@ let osc = ThetaCamera()
 
 // Set OSC API level 2 (for Ricoh THETA S)
 self.osc.startSession { (data, response, error) in
-    if let data = data where error == nil {
-        if let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary, results = jsonDic["results"] as? NSDictionary, sessionId = results["sessionId"] as? String {
+    if let data = data , error == nil {
+        if let jsonDic = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers) as! [String: Any], let results = jsonDic["results"] as? [String: Any], let sessionId = results["sessionId"] as? String {
             self.osc.setOptions(sessionId: sessionId, options: ["clientVersion": 2]) { (data, response, error) in
                 self.osc.closeSession(sessionId: sessionId)
             }
@@ -82,9 +82,9 @@ self.osc.startSession { (data, response, error) in
 
 // Take picture
 self.osc.takePicture { (data, response, error) in
-    if let data = data where error == nil {
-        let jsonDic = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
-        if let jsonDic = jsonDic, rawState = jsonDic["state"] as? String, state = OSCCommandState(rawValue: rawState) {
+    if let data = data, error == nil {
+        let jsonDic = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers) as! [String: Any]
+        if let jsonDic = jsonDic, let rawState = jsonDic["state"] as? String, let state = OSCCommandState(rawValue: rawState) {
             switch state {
             case .InProgress:
                 /*
@@ -94,10 +94,13 @@ self.osc.takePicture { (data, response, error) in
                  * "done" or "error" internally.
                  */
             case .Done:
-                if let results = jsonDic["results"] as? NSDictionary, fileUrl = results["fileUrl"] as? String {
+                if let results = jsonDic["results"] as? [String: Any], let fileUrl = results["fileUrl"] as? String {
+                    // Get file
                     self.osc.get(fileUrl) { (data, response, error) in
-                        dispatch_async(dispatch_get_main_queue()) {
-                            self.previewView.image = UIImage(data: data!)
+                        if let data = data , error == nil {
+                            DispatchQueue.main.async {
+                                self.previewView.image = UIImage(data: data)
+                            }
                         }
                     }
                 }
