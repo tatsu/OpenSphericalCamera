@@ -73,32 +73,32 @@ public struct OSCInfo {
 }
 
 public enum OSCCommandState: String {
-    case InProgress = "inProgress"
-    case Done = "done"
-    case Error = "error"
+    case inProgress
+    case done
+    case error
 }
 
 public enum OSCErrorCode: String {
-    case UnknownCommand	= "unknownCommand" // 400 Invalid command is issued
-    case DisabledCommand = "disabledCommand" // 403 Command cannot be executed due to the camera status
-    case MissingParameter = "missingParameter" // 400 Insufficient required parameters to issue the command
-    case InvalidParameterName = "invalidParameterName" // 400 Parameter name or option name is invalid
-    case InvalidParameterValue = "invalidParameterValue" // 400 Parameter value when command was issued is invalid
-    case InvalidSessionId = "invalidSessionId" // 403 sessionID when command was issued is invalid (Deprecated in v2)
-    case TooManyParameters = "tooManyParameters" // 403 Number of parameters exceeds limit (Added in v2)
-    case CorruptedFile = "corruptedFile" // 403 Process request for corrupted file
-    case CameraInExclusiveUse = "cameraInExclusiveUse" // 400 Session start not possible when camera is in exclusive use (Deprecated in v2)
-    case PowerOffSequenceRunning = "powerOffSequenceRunning" // 403 Process request when power supply is off
-    case InvalidFileFormat = "invalidFileFormat" // 403 Invalid file format specified
-    case ServiceUnavailable = "serviceUnavailable" // 503 Processing requests cannot be received temporarily
-    case CanceledShooting = "canceledShooting" // 403 Shooting request cancellation of the self-timer. Returned in Commands/Status of camera.takePicture (Firmware version 01.42 or above)
-    case Unexpected = "unexpected" // 503 Other errors
+    case unknownCommand // 400 Invalid command is issued
+    case disabledCommand // 403 Command cannot be executed due to the camera status
+    case missingParameter // 400 Insufficient required parameters to issue the command
+    case invalidParameterName // 400 Parameter name or option name is invalid
+    case invalidParameterValue // 400 Parameter value when command was issued is invalid
+    case invalidSessionId // 403 sessionID when command was issued is invalid (Deprecated in v2)
+    case tooManyParameters // 403 Number of parameters exceeds limit (Added in v2)
+    case corruptedFile // 403 Process request for corrupted file
+    case cameraInExclusiveUse // 400 Session start not possible when camera is in exclusive use (Deprecated in v2)
+    case powerOffSequenceRunning // 403 Process request when power supply is off
+    case invalidFileFormat // 403 Invalid file format specified
+    case serviceUnavailable // 503 Processing requests cannot be received temporarily
+    case canceledShooting // 403 Shooting request cancellation of the self-timer. Returned in Commands/Status of camera.takePicture (Firmware version 01.42 or above)
+    case unexpected // 503 Other errors
 }
 
 public enum FileType: String {
-    case All = "all"
-    case Image = "image"
-    case Video = "video"
+    case all
+    case image
+    case video
 }
 
 open class OpenSphericalCamera: OSCCameraCommand {
@@ -312,7 +312,7 @@ public extension OSCCameraCommand {
             }
 
             switch state {
-            case .InProgress:
+            case .inProgress:
                 if progressNeeded {
                     completionHandler?(data, response, error)
                 }
@@ -320,9 +320,9 @@ public extension OSCCameraCommand {
                     sleep(1)
                     self.status(id: id, completionHandler: waitDoneHandler)
                 }
-            case .Done:
+            case .done:
                 fallthrough
-            case .Error:
+            case .error:
                 fallthrough
             default:
                 completionHandler?(data, response, error)

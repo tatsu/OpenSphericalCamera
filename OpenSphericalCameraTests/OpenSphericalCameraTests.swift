@@ -42,7 +42,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.startSession")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
             let results = jsonDic!["results"] as? [String: Any]
             XCTAssert(results != nil && results!.count > 0)
@@ -69,7 +69,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.closeSession")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
             semaphore.signal()
         }
@@ -151,7 +151,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.setOptions")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
             // takePicture
             self.osc.takePicture(sessionId: sessionId) { (data, response, error) in
@@ -163,7 +163,7 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.takePicture")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+                XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
                 let results = jsonDic!["results"] as? [String: Any]
                 XCTAssert(results != nil && results!.count > 0)
@@ -186,7 +186,7 @@ class OpenSphericalCameraTests: XCTestCase {
                         XCTAssert(name != nil && name! == "camera.delete")
 
                         let state = jsonDic!["state"] as? String
-                        XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+                        XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
                         semaphore.signal()
                     }
@@ -216,13 +216,13 @@ class OpenSphericalCameraTests: XCTestCase {
             print(name)
 
             switch commandState {
-            case .InProgress:
+            case .inProgress:
                 print("Progressing")
                 return
-            case .Error:
+            case .error:
                 print(jsonDic["error"])
                 assertionFailure()
-            case .Done:
+            case .done:
                 break;
             }
 
@@ -237,17 +237,17 @@ class OpenSphericalCameraTests: XCTestCase {
                 print(name)
 
                 switch commandState {
-                case .InProgress:
+                case .inProgress:
                     let progress = jsonDic["progress"] as? [String: Any]
                     XCTAssertNotNil(progress)
                     let completion = progress!["completion"] as? NSNumber
                     XCTAssertNotNil(completion)
                     print("inProgress... completion: \(Float(completion!))")
                     return
-                case .Error:
+                case .error:
                     print(jsonDic["error"])
                     assertionFailure()
-                case .Done:
+                case .done:
                     break;
                 }
 
@@ -263,13 +263,13 @@ class OpenSphericalCameraTests: XCTestCase {
                         print(name)
 
                         switch commandState {
-                        case .InProgress:
+                        case .inProgress:
                             print("Progressing")
                             return
-                        case .Error:
+                        case .error:
                             print(jsonDic["error"])
                             assertionFailure()
-                        case .Done:
+                        case .done:
                             assertionFailure()
                             break;
                         }
@@ -287,13 +287,13 @@ class OpenSphericalCameraTests: XCTestCase {
                         print(name)
 
                         switch commandState {
-                        case .InProgress:
+                        case .inProgress:
                             print("Progressing")
                             return
-                        case .Error:
+                        case .error:
                             print(jsonDic["error"])
                             assertionFailure()
-                        case .Done:
+                        case .done:
                             break;
                         }
 
@@ -324,7 +324,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.listImages")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
             let results = jsonDic!["results"] as? [String: Any]
             XCTAssert(results != nil && results!.count > 0)
@@ -348,7 +348,7 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.getMetadata")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+                XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
                 let results = jsonDic!["results"] as? [String: Any]
                 XCTAssert(results != nil && results!.count > 0)
@@ -391,7 +391,7 @@ class OpenSphericalCameraTests: XCTestCase {
             XCTAssert(name != nil && name! == "camera.getOptions")
 
             let state = jsonDic!["state"] as? String
-            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
             let results = jsonDic!["results"] as? [String: Any]
             XCTAssert(results != nil && results!.count > 0)
@@ -415,7 +415,7 @@ class OpenSphericalCameraTests: XCTestCase {
                 XCTAssert(name != nil && name! == "camera.setOptions")
 
                 let state = jsonDic!["state"] as? String
-                XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .Done)
+                XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
 
                 semaphore.signal()
             }

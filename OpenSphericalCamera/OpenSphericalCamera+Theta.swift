@@ -21,13 +21,13 @@ open class ThetaCamera: OpenSphericalCamera, Theta {
 }
 
 public enum ThetaListSort: String {
-    case Newest = "newest"
-    case Oldest = "oldest"
+    case newest
+    case oldest
 }
 
 public enum ThetaFileType: String {
-    case Full = "full"
-    case Thumb = "thumb"
+    case full
+    case thumb
 }
 
 public extension OSCCameraCommand where Self: Theta {
