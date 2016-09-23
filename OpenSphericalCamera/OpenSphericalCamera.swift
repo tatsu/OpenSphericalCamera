@@ -18,6 +18,7 @@ public protocol OSCBase: class {
     var info: OSCInfo! { get }
 
     func cancel()
+    func get(_ urlString: String, thumbnailed: Bool, completionHandler: @escaping ((Data?, URLResponse?, Error?) -> Void)) // Added in v2
 }
 
 public protocol OSCProtocol: class, OSCBase {
@@ -180,12 +181,10 @@ public extension OSCCameraCommand {
         }
     }
 
-    // MARK: - GET Method (Added in v2)
-
-    public func get(_ urlString: String, completionHandler: @escaping ((Data?, URLResponse?, Error?) -> Void)) {
+    public func get(_ urlString: String, thumbnailed: Bool = false, completionHandler: @escaping ((Data?, URLResponse?, Error?) -> Void)) { // Added in v2
         self.cancel()
 
-        let url = URL(string: urlString)!
+        let url = URL(string: thumbnailed ? urlString + "?type=thumb" : urlString)!
         let request = URLRequest(url: url)
         self.task = self.urlSession!.dataTask(with: request, completionHandler: { (data, response, error) in
             completionHandler(data, response, error)

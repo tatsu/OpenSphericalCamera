@@ -129,20 +129,29 @@ class OpenSphericalCameraTestsV2: XCTestCase {
                 self.osc.get(fileUrl!) { (data, response, error) in
                     XCTAssert(data != nil && data!.count > 0)
                     XCTAssertNotNil(UIImage(data: data!))
+                    let normalSize = data!.count
 
-                    // delete
-                    self.osc.delete(fileUrls: [fileUrl!]) { (data, response, error) in
+                    // get thumbnail
+                    self.osc.get(fileUrl!, thumbnailed: true) { (data, response, error) in
                         XCTAssert(data != nil && data!.count > 0)
-                        let jsonDic = try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! [String: Any]
-                        XCTAssert(jsonDic != nil && jsonDic!.count > 0)
+                        XCTAssertNotNil(UIImage(data: data!))
+                        let thumbnailSize = data!.count
+                        XCTAssert(normalSize > thumbnailSize)
 
-                        let name = jsonDic!["name"] as? String
-                        XCTAssert(name != nil && name! == "camera.delete")
+                        // delete
+                        self.osc.delete(fileUrls: [fileUrl!]) { (data, response, error) in
+                            XCTAssert(data != nil && data!.count > 0)
+                            let jsonDic = try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as! [String: Any]
+                            XCTAssert(jsonDic != nil && jsonDic!.count > 0)
 
-                        let state = jsonDic!["state"] as? String
-                        XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
-                        
-                        semaphore.signal()
+                            let name = jsonDic!["name"] as? String
+                            XCTAssert(name != nil && name! == "camera.delete")
+
+                            let state = jsonDic!["state"] as? String
+                            XCTAssert(state != nil && OSCCommandState(rawValue: state!) == .done)
+                            
+                            semaphore.signal()
+                        }
                     }
                 }
             }
