@@ -1,5 +1,5 @@
-# OpenSphericalCamera Client in Swift
-A Swift OpenSphericalCamera API library with Ricoh Theta S extension
+# Open Spherical Camera Client in Swift
+A Swift Open Spherical Camera API library with Ricoh Theta S extension
 
 ## Requirements
 
@@ -58,6 +58,54 @@ github "tatsu/OpenSphericalCamera" ~> 3.0.0
 Run `carthage update` to build the framework and drag the built `OpenSphericalCamera.framework` into your Xcode project.
 
 ## Usage
+
+### Protocols
+
+|API|Method
+|---|------
+|GET /osc/info|info(completionHandler:)
+|POST /osc/state|state(completionHandler:)
+|POST /osc/checkForUpdates|checkForUpdates(stateFingerprint:completionHandler:)
+|POST /osc/commands/execute|execute(_:parameters:completionHandler:)
+||execute(_:parameters:delegate:)
+|POST /osc/commands/status|status(id:completionHandler:)
+
+### Generic Commands
+
+|API|Level 1 (Theta v2.0) Method|Level 2 (Theta v2.1) Method|
+|---|---------------------------|---------------------------|
+|camera.startSession|startSession(progressNeeded:completionHandler:)|-|
+|camera.updateSession|updateSession(sessionId:progressNeeded:completionHandler:)|-|
+|camera.closeSession|closeSession(sessionId:progressNeeded:completionHandler:)|-|
+|camera.takePicture|takePicture(sessionId:progressNeeded:completionHandler:)|takePicture(progressNeeded:completionHandler:)|
+|camera.processPicture|-|processPicture(previewFileUrls:progressNeeded:completionHandler:)|
+|camera.startCapture|-|startCapture(progressNeeded:completionHandler:)|
+|camera.stopCapture|-|stopCapture(progressNeeded:completionHandler:)|
+|camera.getLivePreview|-|getLivePreview(_:)|
+|camera.listImages|listImages(entryCount:maxSize:continuationToken:includeThumb:progressNeeded:completionHandler:)|-|
+|camera.listFiles|-|listFiles(fileType:startPosition:entryCount:maxThumbSize:progressNeeded:completionHandler:)|
+|camera.delete|delete(fileUri:progressNeeded:completionHandler:)|delete(fileUrls:progressNeeded:completionHandler:)|
+|camera.getImage|getImage(fileUri:maxSize:progressNeeded:completionHandler:)|-|
+|camera.getMetadata|getMetadata(fileUri:progressNeeded:completionHandler:)|-|
+|camera.setOptions|setOptions(sessionId:options:progressNeeded:completionHandler:)|setOptions(options:progressNeeded:completionHandler:)|
+|camera.getOptions|getOptions(sessionId:optionNames:progressNeeded:completionHandler:)|getOptions(optionNames:progressNeeded:completionHandler:)|
+|camera.reset|-|reset(progressNeeded:completionHandler:)|
+
+### Theta Commands
+
+|API|Level 1 (Theta v2.0) Method|Level 2 (Theta v2.1) Method|
+|---|---------------------------|---------------------------|
+|camera._finishWlan|_finishWlan(sessionId:progressNeeded:completionHandler:)|_finishWlan(progressNeeded:completionHandler:)|
+|camera._startCapture|_startCapture(sessionId:progressNeeded:completionHandler:)|-|
+|camera._stopCapture|_stopCapture(sessionId:progressNeeded:completionHandler:)|-|
+|camera._listAll|_listAll(entryCount:continuationToken:detail:sort:progressNeeded:completionHandler:)|-|
+|camera.listFiles|-|listFiles(fileType:startPosition:entryCount:maxThumbSize:_detail:_sort:progressNeeded:completionHandler:)|
+|camera.getImage|getImage(fileUri:_type:progressNeeded:completionHandler:)|-|
+|camera._getVideo|_getVideo(fileUri:_type:progressNeeded:completionHandler:)|-|
+|camera._getLivePreview|_getLivePreview(sessionId:completionHandler:)|-|
+|camera._stopSelfTimer|_stopSelfTimer(progressNeeded:completionHandler:)|(same as on the left)|
+
+### Sample Code
 
 ```swift
 import OpenSphericalCamera
